@@ -1,33 +1,33 @@
 <?php
 
-// Use PHPMailer Library
+
 use PHPMailer\PHPMailer;
 
-/**
- * com_light.php — Vereinfachte Sicherheitsschicht für Lukida Light / Essentials
- *
- * Ersetzt die JWT-basierte API-Token-Architektur aus com.php (Pro) durch
- * einen einfachen API-Key-Mechanismus:
- *
- *   - Der Client schickt {"apikey": "<wert>"} im JSON-Body jedes Aufrufs.
- *   - Der Wert wird gegen application.apikey aus der INI-Datei verglichen.
- *   - Kein Ausstellen, Signieren oder Rotieren von Tokens nötig.
- *
- * User-Tokens (Bibliotheksnutzer-Sitzungen) bleiben als einfache HMAC-
- * Signaturen erhalten, damit das Frontend keine Anpassungen braucht.
- * Kein DB-Lookup für Token-Prüfung.
- *
- * INSTALLATION: Diese Datei ersetzt base/com.php 1:1.
- * INI-Eintrag nötig:   [application]
- *                       apikey = <langer-zufälliger-string>
- *
- * Zufälligen Key erzeugen:  php -r "echo bin2hex(random_bytes(32));"
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class com extends general
 {
-  // *******************************************************************
-  // ************* V A R S  &  C O N S T R U C T ***********************
-  // *******************************************************************
+  
+  
+  
   public $adminclient;
   public $avatar;
   public $client;
@@ -44,29 +44,29 @@ class com extends general
 
     if ( ACTION != "batch" )
     {
-      // JSON-Body einlesen
+      
       $this->posted = (array) json_decode(file_get_contents("php://input"), true);
       if ( APPDEBUG["PAY"] ) $this->debug("PAY", $this->posted);
 
-      // Sprache
+      
       $this->lang = ( isset($this->posted["lang"])
                       && trim($this->posted["lang"])
                       && in_array(trim($this->posted["lang"]), array("e", "g")) )
                     ? trim($this->posted["lang"]) : "";
 
-      // Client-IP
+      
       $this->clientip = "";
       if (!$this->clientip && !empty($_SERVER['HTTP_X_REAL_IP']))       $this->clientip = $_SERVER['HTTP_X_REAL_IP'];
       if (!$this->clientip && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) $this->clientip = $_SERVER['HTTP_X_FORWARDED_FOR'];
       if (!$this->clientip && !empty($_SERVER['REMOTE_ADDR']))          $this->clientip = $_SERVER['REMOTE_ADDR'];
     }
 
-    // ----------------------------------------------------------------
-    // Permission Teil 1: API-Zugang
-    // ----------------------------------------------------------------
+    
+    
+    
     if ( ACTION == "batch" )
     {
-      // Batch-Zugang braucht keinen API-Key (läuft intern)
+      
       $this->posted = array();
       $this->lang   = "g";
       $this->user   = "";
@@ -75,7 +75,7 @@ class com extends general
     }
     elseif ( ACTION == "version" )
     {
-      // Version-Abfrage: nur client-Parameter prüfen, kein Key nötig
+      
       $Client = $this->checkPostedStr("client");
       if ( !$Client )
       {
@@ -88,13 +88,13 @@ class com extends general
     }
     else
     {
-      // ---- LIGHT: einfacher API-Key-Check ----
+      
       $ConfigKey  = trim((string) $this->f3->get("application.apikey"));
       $PostedKey  = $this->checkPostedStr("apikey");
 
       if ( !$ConfigKey )
       {
-        // Kein Key konfiguriert → Betreiber-Fehler, nicht stillschweigend zulassen
+        
         if ( APPDEBUG["LOG"] ) $this->debug("LOG", "API Access ERROR: no apikey configured");
         $this->finalize(array("status" => -1, "code" => "apikeynotconfigured"));
       }
@@ -105,7 +105,7 @@ class com extends general
         $this->finalize(array("status" => -1, "code" => "apikeyinvalid"));
       }
 
-      // Client aus dem POST-Body (kein verschlüsseltes Token mehr nötig)
+      
       $Client = $this->checkPostedStr("client");
       if ( !$Client )
       {
@@ -120,9 +120,9 @@ class com extends general
       if ( APPDEBUG["LOG"] ) $this->debug("LOG", "API Access OK (" . $this->client . ")");
     }
 
-    // ----------------------------------------------------------------
-    // Permission Teil 2: Nutzer-Zugang
-    // ----------------------------------------------------------------
+    
+    
+    
     $ReadArea = $this->checkPostedStr("area");
     if ( in_array(ACTION, array("batch", "config", "dash", "login", "regis", "storeregis"))
       || ( ACTION == "read" && $ReadArea == "admintexts" )
@@ -132,7 +132,7 @@ class com extends general
       return (0);
     }
 
-    // User-Token prüfen (bleibt HMAC-basiert, kein DB-Lookup)
+    
     $Tokn = $this->checkPostedStr("tokens", "user");
     if ( $Tokn )
     {
@@ -154,17 +154,17 @@ class com extends general
     $this->finalize(array("status" => -1, "code" => "loginerror"));
   }
 
-  // *******************************************************************
-  // ************* P R I V A T E ***************************************
-  // *******************************************************************
+  
+  
+  
   private function base64url_encode($str)
   {
     return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
   }
 
-  // *******************************************************************
-  // ************* P R O T E C T E D ***********************************
-  // *******************************************************************
+  
+  
+  
   protected function checkPostedStr($Index, $Index2="", $Index3="")
   {
     if ( !$Index  || !isset($this->posted[$Index]) )                     return "";
@@ -242,7 +242,7 @@ class com extends general
     $signature_provided = $tokenParts[2];
     $dt                 = json_decode($payload)->dt;
 
-    // User-Token läuft nach minsvalidtoken Minuten ab
+    
     if ( $type == "user" && ((time() - $dt) > (60 * $this->f3->get("application.minsvalidtoken"))) )  return [];
 
     $base64_url_header  = $this->base64url_encode($header);
@@ -289,7 +289,7 @@ class com extends general
       }
     }
 
-    // Gleitende User-Token-Gültigkeit
+    
     if ( is_array($this->UserTokenPayload) && count($this->UserTokenPayload)
       && ( !isset($Results["status"]) || $Results["status"] >= 0 ) )
     {

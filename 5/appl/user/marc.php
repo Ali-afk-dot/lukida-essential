@@ -2,9 +2,9 @@
 
 class marc
 {
-  // *******************************************************************
-  // ************* V A R S  &  C O N S T R U C T ***********************
-  // *******************************************************************
+  
+  
+  
   private $add;
   private $ArtCode;
   private $ArticleLink;
@@ -20,13 +20,13 @@ class marc
   private $Format;
   private $ID;
   private $ILNGroups;
-  private $Items;        // Struktur: Group EPN usw.
+  private $Items;        
   private $lang;
   private $Links;
   private $MasterLink;
   private $SolrOne;
-  private $MItems;       // Struktur: EPN usw.
-  private $MultiItems;   // Struktur: Group EPN usw.
+  private $MItems;       
+  private $MultiItems;   
   private $Online;
   private $OriginalYear;
   private $OwnCollection;
@@ -51,9 +51,9 @@ class marc
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
   }
 
-  // *******************************************************************
-  // ************* P R I V A T E ***************************************
-  // *******************************************************************
+  
+  
+  
   private function addOriginalCharacters(&$Fields)
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -71,7 +71,7 @@ class marc
         }
       }
 
-      // 245 Title
+      
       if ( isset($Simple["6"]) && substr($Simple["6"],0,3) == "245" )
       {
         $Tmp = "";
@@ -91,11 +91,11 @@ class marc
           $Pos2  = (isset($Fields["bib_03"]["items"]) && is_array($Fields["bib_03"]["items"])) ? count($Fields["bib_03"]["items"]) : 0;
           if ( !isset($Fields["bib_03"]["items"]) ) $Fields["bib_03"]["items"] = array();
           $Fields["bib_03"]["items"]["item_".++$Pos2] = array("text" => $Tmp2, "action" => array());
-         // $this->CS->debug("AÖX", $Fields["bib_03"]["items"]);
+         
         }
       }
 
-      // 246 AddTitle
+      
       if ( isset($Simple["6"]) && substr($Simple["6"],0,3) == "246" )
       {
         $Tmp = "";
@@ -108,125 +108,125 @@ class marc
         $Fields["bib_42"]["items"]["item_".++$Pos] = array("text" => $Tmp, "action" => array());
       }
 
-      /*
-      //710 Corporation
-      if ( isset($Simple["6"]) && substr($Simple["6"],0,3) == "710" )
-      {
-        $Tmp = "";
-        if ( isset($Simple["a"]) && $Simple["a"] != "" && isset($Simple["b"]) && $Simple["b"] != "" )       $Tmp  = $Simple["a"] . " : " . $Simple["b"];
-        if ( isset($Simple["a"]) && $Simple["a"] != "" && (!isset($Simple["b"]) || $Simple["b"] == "" ) )   $Tmp  = $Simple["a"];
-        if ( ( !isset($Simple["a"]) || $Simple["a"] == "" ) && isset($Simple["b"]) && $Simple["b"] != "" )  $Tmp  = $Simple["b"];
-        if ( isset($Simple["c"]) && $Simple["c"] != "" )                                                    $Tmp .= " " . $Simple["c"];
-        if ( isset($Simple["e"]) && $Simple["e"] != "" )                                                    $Tmp .= " (" . $Simple["e"] . ")";
-        $Pos  = (isset($Fields["bib_07"]["items"]) && is_array($Fields["bib_07"]["items"])) ? count($Fields["bib_07"]["items"]) : 0;
-        if ( !isset($Fields["bib_07"]["items"]) ) $Fields["bib_07"]["items"] = array();
-        $Fields["bib_07"]["items"]["item_".++$Pos] = array("text" => $Tmp, "action" => array());
-      }
-      */
+      
 
-      /*
-      // 100 People
-      if ( isset($Simple["6"]) && substr($Simple["6"],0,3) == "100" )
-      {
-        $Name  = $this->formatPersonName($Rec);
-        $Norm  = $this->getNorm($Rec);
-        $Typ   = "A";
-        $Pos   = (isset($Fields["bib_04"]["items"]) && is_array($Fields["bib_04"]["items"])) ? count($Fields["bib_04"]["items"]) : 0;
-        $Roles = $this->getPersonRoles($Rec, $Typ == "A");
-        $Roles = array_filter($Roles);
-        if ( $Typ == "A" )  $Roles = array_diff($Roles, array("aut"));
 
-        foreach ( $Roles as &$Role )
-        {
-          $Role = $this->CS->getText("role.".$Role);
-        }
-        $Roles = array_filter($Roles);
-        $Text = $Name;
-        if ( count($Roles) ) $Text .= " (" . implode(", ", $Roles) . ")";
 
-        $Fields["bib_04"]["items"]["item_".++$Pos]   = array("text"   => $Text,
-                                                             "action" => array(
-                                                                               "type"   => "search",
-                                                                               "search" => array(
-                                                                                                 "query" => ( $Norm )
-                                                                                                            ? "norm(" . $Norm . ")"
-                                                                                                            : "author(" . $this->clear($Name) . ")",
-                                                                                                 "type"  => "lukida"
-                                                                                                )
-                                                                            ),
-                                                             "more"   => array());
-      }
-      // 700 People
-      if ( isset($Simple["6"]) && substr($Simple["6"],0,3) == "700" )
-      {
-        $Name  = $this->formatPersonName($Rec);
-        $Norm  = $this->getNorm($Rec);
-        $Typ   = "B";
-        $RecNr = explode("/", substr($Simple["6"],4))[0];
-        // $this->CS->debug("ALX83", $RecNr);
-        $Pos   = (isset($Fields["bib_05"]["items"]) && is_array($Fields["bib_05"]["items"])) ? count($Fields["bib_05"]["items"]) : 0;
-        $Roles = $this->getPersonRoles($Rec, $Typ == "A");
-        $Roles = array_filter($Roles);
-        if ( $Typ == "A" )  $Roles = array_diff($Roles, array("aut"));
 
-        foreach ( $Roles as &$Role )
-        {
-          $Role = $this->CS->getText("role.".$Role);
-        }
-        $Roles = array_filter($Roles);
-        $Text = $Name;
-        if ( count($Roles) ) $Text .= " (" . implode(", ", $Roles) . ")";
 
-        $Fields["bib_05"]["items"]["item_".++$Pos]   = array("text"   => $Text,
-                                                             "action" => array(
-                                                                               "type"   => "search",
-                                                                               "search" => array(
-                                                                                                 "query" => ( $Norm )
-                                                                                                            ? "norm(" . $Norm . ")"
-                                                                                                            : "author(" . $this->clear($Name) . ")",
-                                                                                                 "type"  => "lukida"
-                                                                                                )
-                                                                            ),
-                                                             "more"   => array());
 
-      }
-      */
 
-      // 264 Published
-      /*
-      if ( isset($Simple["6"]) && substr($Simple["6"],0,3) == "264" )
-      {
-        $Pos = (isset($Fields["bib_12"]["items"]) && is_array($Fields["bib_12"]["items"])) ? count($Fields["bib_12"]["items"]) : 0;
-        if ( isset($Simple["a"]) && $Simple["a"] != "" )
-        {
-          if ( !isset($Fields["bib_12"]["items"]) ) $Fields["bib_12"]["items"] = array();
-          $Fields["bib_12"]["items"]["item_".++$Pos] =  array("text"   => $Simple["a"],
-                                                              "action" => array());
-        }
-        if ( isset($Simple["b"]) && $Simple["b"] != "" )
-        {
-          if ( !isset($Fields["bib_12"]["items"]) ) $Fields["bib_12"]["items"] = array();
-          $Fields["bib_12"]["items"]["item_".++$Pos] =  array("text"   => $Simple["b"],
-                                                              "action" => array("type"   => "search",
-                                                                                "search" => array(
-                                                                                                  "query" => "publisher(" . $Simple["b"] . ")",
-                                                                                                  "type"  => "lukida"
-                                                                                                 )));
-        }
-        if ( isset($Simple["c"]) && $Simple["c"] != "" )
-        {
-          if ( !isset($Fields["bib_12"]["items"]) ) $Fields["bib_12"]["items"] = array();
-          $Fields["bib_12"]["items"]["item_".++$Pos] =  array("text"   => $Simple["c"],
-                                                              "action" => array("type"   => "search",
-                                                                                "search" => array(
-                                                                                                  "query" => "year(" . $Simple["c"] .")",
-                                                                                                  "type"  => "lukida"
-                                                                                                 )));
-        }
-      }
-      */
 
-      // 490 Part
+
+
+
+
+
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
       if ( isset($Simple["6"]) && substr($Simple["6"],0,3) == "490" )
       {
         $Tmp = "";
@@ -246,7 +246,7 @@ class marc
                                                            "action" => array());
       }
 
-      // 250 Edition
+      
       if ( isset($Simple["6"]) && substr($Simple["6"],0,3) == "250" && isset($Simple["a"]) )
       {
         $Pos  = (isset($Fields["bib_10"]["items"]) && is_array($Fields["bib_10"]["items"])) ? count($Fields["bib_10"]["items"]) : 0;
@@ -257,18 +257,18 @@ class marc
     return $Fields;
   }
 
-  // Bereitet einen Wert fuer einen Klammerbefehl auf ("series(...)"), indem er
-  // in Anfuehrungszeichen gesetzt wird.
-  //
-  // Bis zum 14.08.2026 wurden hier zusaetzlich "(" und ")" durch die
-  // ZEICHENFOLGEN "%28"/"%29" ersetzt. Das ging schief: der Wert wird spaeter
-  // beim Bau der Adresse noch einmal kodiert, aus "%28" wurde "%2528", und nach
-  // dem einen Dekodieren des Browsers stand im Suchtext woertlich "%28LVermGeo%29"
-  // statt "(LVermGeo)". Die Suche lief ins Leere - zurueckverwandelt wurde das
-  // nirgends. Noetig war die Ersetzung ohnehin nie: die Zerlegung der Befehle in
-  // solr.php behandelt Anfuehrungszeichen als eigene Alternative, Klammern
-  // INNERHALB der Anfuehrungszeichen beenden den Befehl also nicht.
-  // Beispiel: id:1688778462, Reihe "Topographische Karte 1:25 000 ... (LVermGeo)".
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   private function clear($Str)
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -284,7 +284,7 @@ class marc
     $Retn = array();
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "856" => array("3","t","u","x","y","z")));
-    // Newline
+    
     foreach ( $Recs as $Rec )
     {
       $Link  = $this->getSFTexts($Rec, "u");
@@ -332,7 +332,7 @@ class marc
     $Retn = array();
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "510" => array("a")));
-    // NO Newline
+    
     $Add  = array();
     foreach ( $Recs as $Rec )
     {
@@ -469,7 +469,7 @@ class marc
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // Achtung: Globale Klassifikation hier | Lokale Klassifikation mit "L" unterhalb
+    
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "084" => array("2","a")));
     $Item = 0;
@@ -478,8 +478,8 @@ class marc
     {
       if ( !isset($Rec["a"]["0"]) || !isset($Rec["2"]["0"]) ) continue;
 
-      $CSys = strtoupper($Rec["2"]["0"]);   // Shortcut of system
-      foreach ( $Rec["a"] as $Code )        // Code
+      $CSys = strtoupper($Rec["2"]["0"]);   
+      foreach ( $Rec["a"] as $Code )        
       {
         $CRec = $this->CS->getCDBClass($CSys, $Code);
         if ( isset($CRec["link"]) && trim($CRec["link"]) )
@@ -533,7 +533,7 @@ class marc
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // Achtung: Lokale Klassifikation hier mit "L"| Globale Klassifikation ohne "L" oberhalb
+    
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "983" => array("a","b")));
     $Item = 0;
@@ -544,18 +544,18 @@ class marc
       if ( !isset($Rec["a"]["0"]) ) continue;
       $Text = isset($Rec["b"]["0"]) ? $Rec["b"]["0"] : $Rec["a"]["0"];
       $Code = $Rec["a"]["0"];
-      // Woher der Text der lokalen Systematik kommt - Schalter statt Clientname
-      // (03.09.2026, Stufe 2 Teil A):
-      //
-      //   text   ueber classlocal.<Text> nachschlagen        (Vorgabe)
-      //   none   gar nicht nachschlagen                      (bisher VechtaUB)
-      //   code2  ueber die ersten zwei Teile des CODES       (bisher MagdeburgOVGU)
-      //
-      // Der frueher fuer GoettingenSUB angehaengte Zusatz " (GOK <Code>)" faellt
-      // ersatzlos weg: dafuer gibt es bibliographic.classwithcode, und die
-      // Oberflaeche haengt den Code ohnehin an (BiblioLine.vue::classLabel).
-      // Auf dem Schirm stand dadurch "RD (GOK RD)RD" - derselbe Wert dreimal
-      // (nachgesehen an id 029692539).
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       $ClassText = ( isset($this->CS->configs["bibliographic"]["classlocaltext"])
                   && trim($this->CS->configs["bibliographic"]["classlocaltext"]) )
                    ? strtolower(trim($this->CS->configs["bibliographic"]["classlocaltext"])) : "text";
@@ -567,16 +567,16 @@ class marc
       }
        if ( $ClassText == "code2" )
        {
-         // Lokale Systematik der OVGU (17.08.2026). Der Systematikpunkt steht
-         // in M983a, dort aber nur in den ersten beiden durch Leerzeichen
-         // getrennten Teilen; alles dahinter ist Beiwerk und gehoert nicht zum
-         // Schluessel:
-         //   "B. 206"                      -> Punkt "B. 206",  classlocal.b.206
-         //   "F/E 910 <Hegel, ...> Theu"    -> Punkt "F/E 910", classlocal.f/e910
-         // Angezeigt wird "<Punkt> <Text>". Der Code kommt damit schon im Text
-         // vor und wird geleert, damit die Oberflaeche ihn nicht ein zweites
-         // Mal in Klammern anhaengt. Ohne passenden Text bleibt alles, wie es
-         // aus dem Datensatz kam.
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
          $Teile = preg_split('/\s+/', trim($Code));
          $Punkt = implode(" ", array_slice($Teile, 0, 2));
          $Tmp   = $this->CS->getText("classlocal." . strtolower(str_replace(" ", "", $Punkt)));
@@ -661,7 +661,7 @@ class marc
 
     foreach ( $Recs as $Rec )
     {
-      // if ( !isset($Rec["a"]["0"]) ) continue;
+      
  
       $Add  = array();
       $Add[] = $this->getSFTexts($Rec, "a");
@@ -747,7 +747,7 @@ class marc
 
     $Recs       = $this->getCompleteArray(array($this->Prefix . "710" => array(" 0","4","6","a","b","e","g")));
     $RecsOrg    = $this->getCompleteArray(array($this->Prefix . "880" => array( "4","6","a","b","c")));
-    // Newline
+    
     if ( $Item & count($Recs) ) $Retn["item_".++$Item]     = array("display" => "newline");
     foreach ( $Recs as $Field => $Rec )
     {
@@ -816,7 +816,7 @@ class marc
     $Item  = 0;
 
 
-    // Block 245np
+    
     $Recs = $this->getCompleteArray(array($this->Prefix . "245" => array("n","p")));
     foreach ( $Recs as $Rec )
     {
@@ -850,7 +850,7 @@ class marc
       }
     }
 
-    // Block 773g
+    
     if ( !count($Parts) )
     {
       $Recs = $this->getCompleteArray(array($this->Prefix . "773" => array("g")));
@@ -864,13 +864,13 @@ class marc
               || substr($Text, 0, 7) == "number:" || substr($Text, 0, 6) == "pages:"
               || substr($Text, 0, 6) == "month:"  || substr($Text, 0, 7) == "extent:"
               || substr($Text, 0, 4) == "day:" )  continue;
-            // "day:" auch am ENDE eines Wertes entfernen (03.09.2026).
-            //
-            // Die Liste darueber faengt nur Werte, die MIT dem Schluesselwort
-            // beginnen. Manche Lieferungen haengen es aber an denselben Wert an:
-            //   "35(1997), 12 vom: 28. Dez., Seite 927-35; day:28"
-            // Der Tag steht im Text ohnehin schon ("28. Dez."), und in der
-            // kleinen Kachel stand er als technischer Rest sichtbar dahinter.
+            
+            
+            
+            
+            
+            
+            
             $Text = preg_replace('/\s*;\s*day:\s*\d+\s*$/u', "", $Text);
             if ( trim($Text) === "" )  continue;
             $Parts[] = $Text;
@@ -879,7 +879,7 @@ class marc
       }
     }
 
-    // Block 490av
+    
     if ( !count($Parts) )
     {
       $Recs = $this->getCompleteArray(array($this->Prefix . "490" => array("a","v")));
@@ -1018,7 +1018,7 @@ class marc
 
     $Publ = array();
 
-    // Only first record
+    
     if ( isset($Recs["M264_0"]) )
     {
       $Rec = $Recs["M264_0"];
@@ -1045,7 +1045,7 @@ class marc
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "502" => array("a", "b", "c", "d")));
 
-    // Only first record
+    
     if ( isset($Recs["M502_0"]) )
     {
       $Rec   = $Recs["M502_0"];
@@ -1062,7 +1062,7 @@ class marc
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "300" => array("a")));
 
-    // Only first record
+    
     if ( isset($Recs["M300_0"]) )
     {
       $Rec   = $Recs["M300_0"];
@@ -1071,7 +1071,7 @@ class marc
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "256" => array("a")));
 
-    // Only first record
+    
     if ( isset($Recs["M256_0"]) )
     {
       $Rec   = $Recs["M256_0"];
@@ -1080,7 +1080,7 @@ class marc
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "520" => array("a")));
 
-    // Only first record
+    
     if ( isset($Recs["M520_0"]) )
     {
       $Rec   = $Recs["M520_0"];
@@ -1089,7 +1089,7 @@ class marc
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "655" => array("a")));
 
-    // Only first record
+    
     if ( isset($Recs["M655_0"]) )
     {
       $Rec   = $Recs["M655_0"];
@@ -1114,7 +1114,7 @@ class marc
 
     $Link = array();
 
-    // Only first record
+    
     if ( isset($Recs["M856_0"]) )
     {
       $Rec = $Recs["M856_0"];
@@ -1138,10 +1138,10 @@ class marc
     $Item = 0;
     $Retn = array();
 
-    // ISBN: je Nummer eine eigene Zeile. Bevorzugt wird Unterfeld "9" (mit
-    // Bindestrichen, besser lesbar), sonst "a" (ohne). Doppelte fallen weg -
-    // verglichen wird OHNE Bindestriche, weil dieselbe Nummer sonst in beiden
-    // Schreibweisen doppelt erschiene (2026-08-11).
+    
+    
+    
+    
     $Seen  = array();
     $Recs  = $this->getCompleteArray(array($this->Prefix . "020" => array("9","a")));
     foreach ( $Recs as $Rec )
@@ -1170,17 +1170,17 @@ class marc
       $value = trim($this->getSFTexts($Rec, "a"));
       $normalized = str_replace('-', '', $value);
 
-      //DOI raus
+      
       if (strpos($value, "10.") === 0) continue;
 
-      //URN raus
+      
       if (strpos($value, "urn:") === 0) continue;
 
-      //alles was keine ISBN ist raus
+      
       if (!preg_match('/^(97[89])?\d{9}[\dxX]$/', $normalized)) continue;
 
-      // auch gegen die Nummern aus 020 pruefen - sonst steht dieselbe ISBN
-      // zweimal da, einmal mit und einmal ohne Bindestriche.
+      
+      
       $Key = strtoupper($normalized);
       if ( isset($Seen[$Key]) )  continue;
       $Seen[$Key] = true;
@@ -1230,18 +1230,18 @@ class marc
       }
     }
 
-    // Doppelte entfernen - die TRENNMARKEN dabei nicht mitzaehlen (03.09.2026).
-    //
-    // Vorher stand hier getUniqueMultArray(). Das vergleicht die Eintraege als
-    // Ganzes, und die Trennmarken zwischen zwei Nummern sind untereinander
-    // gleich ({"display":"newline"}): die zweite galt als Doppelung und fiel
-    // weg. Bei drei ISBN klebte die dritte deshalb ohne Umbruch an der zweiten
-    // ("978-3-608-94462-4978-3-7910-3025-8", gemeldet an id 523890060).
-    // Ausserdem laesst array_unique die Schluessel stehen, es blieb also eine
-    // Luecke in der Nummerierung.
-    //
-    // Die Marke wird nur zurueckgehalten und erst gesetzt, wenn wirklich eine
-    // weitere Nummer folgt - sonst entstuende eine Leerzeile.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     $Sauber  = array();
     $Gesehen = array();
     $Nr      = 0;
@@ -1250,7 +1250,7 @@ class marc
     {
       if ( !isset($Eintrag["text"]) )
       {
-        if ( $Nr )  $Marke = $Eintrag;   // vor der ersten Nummer nie
+        if ( $Nr )  $Marke = $Eintrag;   
         continue;
       }
       $Schluessel = strtoupper(str_replace(array("-", " "), "", (string) $Eintrag["text"]));
@@ -1498,9 +1498,9 @@ class marc
     $Item = 0;
     $OEds = array();
 
-    // Vorgänger
+    
     $Recs = $this->getCompleteArray(array($this->Prefix . "780" => array("a","b","d","g","h","i","q","t","w")));
-    // if ( empty($Recs) )  return array();
+    
     foreach ( $Recs as $Rec )
     {
       if ( $Item > 0 )
@@ -1545,9 +1545,9 @@ class marc
       }
     }
 
-    // Nachfolger
+    
     $Recs = $this->getCompleteArray(array($this->Prefix . "785" => array("a","b","d","g","h","i","q","t","w")));
-    // if ( empty($Recs) )  return array();
+    
     foreach ( $Recs as $Rec )
     {
       if ( $Item > 0 )
@@ -1616,11 +1616,11 @@ class marc
 
     foreach ( $Recs as $Cat => $Rec )
     {
-      // Author oder B
+      
       $Typ  = (substr($Cat,1,3) == "100") ? "A" : "B";
       $Cnt  = $Item[$Typ];
 
-      // Rollen
+      
       $Roles = $this->getPersonRoles($Rec, $Typ == "A");
       $Roles = array_filter($Roles);
       if ( $Typ == "A" )  $Roles = array_diff($Roles, array("aut"));
@@ -1706,7 +1706,7 @@ class marc
     if ( !$PROV ) return array();
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "361" => array("0","5","a","f","k","l","o","s","u","z")));
-    // $Recs = $this->getCompleteArray(array($this->Prefix . "561" => array("3","5","a")));
+    
     if ( empty($Recs) )  return array();
 
     $Item = 0;
@@ -1722,11 +1722,11 @@ class marc
       }
       if ( $PROV == "iln*" )
       {
-        // $this->CS->debug("ALXISIL", $this->CS->configs["isils"]);
+        
         $Found = false;
         foreach ($this->CS->configs["isils"] as $I)
         {
-          // Es wird ISIL- geprüft, also mit Strich hinter ISIL
+          
           if ( $I == $Rec["5"]["0"] || strncmp($I . "-", $Rec["5"]["0"], strlen($I)+1) === 0 )
           {
             $Found = true;
@@ -1758,13 +1758,13 @@ class marc
       $Name  = $this->getSFTexts($Rec, "a", "");
       $Add[] = ($Bez) ? $Bez . ": " . $Name : ", " . $Name;
       $Add[] = $this->getSFTexts($Rec, "f", ", ");
-      // $Add[] = $this->getSFTexts($Rec, "u", ", ");  // GND
+      
       $Add[] = $this->getSFTexts($Rec, "k", ", ");
       $Add[] = $this->getSFTexts($Rec, "l", ", ");
       $Add[] = $this->getSFTexts($Rec, "z", ", ");
       $Add   = array_filter($Add);
 
-      // $this->CS->debug("ALXPROV", $Add);
+      
 
       $Pros["item_".++$Item]    = array("text"   => implode("", $Add));
       $Pros["item_".++$Item]    = array("text"   => "",
@@ -1793,8 +1793,8 @@ class marc
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // e                             (ISIL aus 5)
-    // n.en erh- e-e. haau 3 1803A 4 (Halle/S UuLB)
+    
+    
 
     $FingType    = ( isset($this->CS->configs["bibliographic"]["fingerprint"]) && $this->CS->configs["bibliographic"]["fingerprint"] )
                    ? trim(strtolower($this->CS->configs["bibliographic"]["fingerprint"])) : "";
@@ -1812,7 +1812,7 @@ class marc
 
       $ISILs = array_values(array_intersect($this->CS->configs["isils"], $Rec["5"]));
 
-      // No matching ISIL
+      
       if ( !count($ISILs) )
       {
         if ( $FingType == "iln" ) continue;
@@ -1858,7 +1858,7 @@ class marc
     $Pubs = [];
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "773" => array("a","b","d","g","h","i","q","t","w")));
-    $Rec  = ( count($Recs) ) ? array_shift($Recs) : array();  // NUr ersten Satz keine Schleife
+    $Rec  = ( count($Recs) ) ? array_shift($Recs) : array();  
     $In   = "";
     if ( count($Rec) )
     {
@@ -1871,10 +1871,10 @@ class marc
       }
       if ( isset($Rec["w"][0]) && in_array(substr($Rec["w"][0],0,8), array("(DE-601)","(DE-627)") ) )
       {
-        // Mit Link
+        
         if ( isset($Rec["t"][0]) && $Rec["t"][0] )
         {
-          // Mit Titel
+          
           $Pubs["item_".++$Item]  = array("text"   => $Rec["t"]["0"],
                                           "action" => array(
                                                             "type"   => "search",
@@ -1888,7 +1888,7 @@ class marc
         }
         else
         {
-          // Ohne Titel
+          
           $Pubs["item_".++$Item]  = array("text"   => $this->getSubfieldFirst($this->Prefix . "245", "a"),
                                           "action" => array(
                                                             "type"   => "search",
@@ -1903,7 +1903,7 @@ class marc
       }
       elseif ( isset($Rec["t"][0]) && $Rec["t"][0] )
       {
-        // Ohne Link
+        
         $Pubs["item_".++$Item]  = array("text"   => $Rec["t"]["0"],
                                         "action" => array(),
                                         "more"   => array()
@@ -1952,10 +1952,10 @@ class marc
     $RecsOrg = $this->getCompleteArray(array($this->Prefix . "880" => array("6","a","b","c")));    
     if ( count($Recs) )
     {
-      // Copyright-Angaben (I2 = 4) werden nicht als eigene Zeile ausgegeben,
-      // sondern hinten an die Veroeffentlichung (I2 = 1) angehaengt - nach
-      // "; " und in eckigen Klammern, mehrere durch ", " getrennt.
-      // Beispiel (id 1938112083): "Hamburg Junius 2026; [© 2019]" (2026-08-11).
+      
+      
+      
+      
       $Copies = array();
       foreach ( $Recs as $Rec2 )
       {
@@ -1971,8 +1971,8 @@ class marc
       {
         if ( isset($Rec["I2"][0]) && $Rec["I2"][0] == "4" ) continue;
 
-        // Kein Umbruch zwischen mehreren 264ern: alle Angaben zur
-        // Veroeffentlichung stehen in EINER Zeile (2026-08-11).
+        
+        
 
         $Text = ( isset($Rec["a"]["0"]) ) ? $Rec["a"]["0"] : $this->getSubfieldFirst($this->Prefix . "245", "a");
         $Org  = $this->getOrgPubl(substr($Field,1,3), $Rec, $RecsOrg);
@@ -2040,13 +2040,13 @@ class marc
         }
       }
 
-      // Copyright-Angaben ganz am Ende DERSELBEN Zeile, nach "; " und je in
-      // eckigen Klammern; mehrere durch ", " getrennt (2026-08-11).
+      
+      
       if ( count($Copies) )
       {
-        // An den TEXT des letzten Eintrags anhaengen, nicht als eigener
-        // Eintrag: die Oberflaeche setzt zwischen zwei Eintraegen ein
-        // Leerzeichen, es stuende sonst "2026 ; [© 2019]".
+        
+        
+        
         $LastKey = "";
         foreach ( $Pubs as $Key => $One )
         {
@@ -2269,7 +2269,7 @@ class marc
 
     foreach ( $Recs as $Rec )
     {
-      // $this->CS->debug("ALX", $Rec);
+      
 
        $Text = "";
        $Add  = array();
@@ -2277,11 +2277,11 @@ class marc
       {
         if ( $Item ) $Retn["item_".++$Item]     = array("display" => "newline");
 
-        // Muster: "i z n: t / a, d" (2026-08-13).
-        // Der Doppelpunkt gehoert an das LETZTE der einleitenden Felder - ist n
-        // nicht vorhanden, steht er hinter i. Vorher haftete er fest an n, und
-        // die uebrigen Felder wurden mit Komma angehaengt; nach "n:" stand
-        // dadurch ein ueberzaehliges ", " vor dem Titel.
+        
+        
+        
+        
+        
         $Lead = array();
         foreach ( array("i", "z", "n") as $SF )
         {
@@ -2290,8 +2290,8 @@ class marc
         }
         $Text = count($Lead) ? implode(" ", $Lead) . ":" : "";
 
-        // Titel und Verfasserangabe mit " / " verbunden, danach das Impressum
-        // mit ", " - wie in der Titelaufnahme selbst.
+        
+        
         $Title = trim($this->getSFTexts($Rec, "t"));
         $Auth  = trim($this->getSFTexts($Rec, "a"));
         if ( $Title !== "" && $Auth !== "" )       $Add[] = $Title . " / " . $Auth;
@@ -2348,7 +2348,7 @@ class marc
       }
     }
 
-    // $this->CS->debug("ALX", $More);
+    
 
     if ( count($More) )
     {
@@ -2367,14 +2367,14 @@ class marc
       }
     }
 
-    // M535 - Vorlage der elektronischen Reproduktion: Einrichtung (a) und
-    // Signatur (3), getrennt durch Gedankenstrich; die Signatur traegt die
-    // Suche, weil man darueber zum gedruckten Stueck kommt.
-    //
-    // Hinweis fuer den Fall, dass die Zeile doppelt zu erscheinen scheint:
-    // Bei Digitalisaten steht dieselbe Angabe haeufig ZUSAETZLICH in 776 $i/$n
-    // ("Elektronische Reproduktion von" + "... -- Ic 4095 (2)"). Das ist eine
-    // Doppelung in den DATEN, nicht im Code (2026-08-13 geprueft an 1964949912).
+    
+    
+    
+    
+    
+    
+    
+    
     $Recs = $this->getCompleteArray(array($this->Prefix . "535" => array("3","a")));
     foreach ( $Recs as $Rec )
     {
@@ -2400,10 +2400,10 @@ class marc
       }
     }
 
-    // M533 - Reproduktionshinweis. Gemeint ist NUR der Satz mit Unterfeld 7;
-    // daneben steht regelmaessig ein zweiter ohne, der die Reproduktion bloss
-    // grob benennt ("Reproduktion, Halle, Saale, ULB") und hier nichts beitraegt.
-    // Aufbau: a, b, c, d. – e. – f
+    
+    
+    
+    
     $Recs = $this->getCompleteArray(array($this->Prefix . "533" => array("7","a","b","c","d","e","f")));
     foreach ( $Recs as $Rec )
     {
@@ -2580,9 +2580,9 @@ class marc
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // Achtung 2 Collections
-    // $this->Collection      Index-Felder als Array von SOLR
-    // $this->CS->Collection  Collektions-Beschreibungstabelle von LCDB
+    
+    
+    
     $Recs = $this->Collection;
     if ( in_array("GVK", $Recs) && in_array("KXP", $Recs) ) $Recs = array_diff($Recs, array("GVK"));
 
@@ -2627,26 +2627,26 @@ class marc
     return $Returns;
   }
 
-  // Doppelte Schlagwortketten entfernen.
-  //
-  // $Retn ist EINE flache, geordnete Liste aus Begriffs-Eintraegen und Trennern
-  // ("display" => "newline"); eine Kette ist alles zwischen zwei Trennern.
-  // getUniqueMultArray() laesst sich deshalb nicht unmittelbar darauf anwenden:
-  // es verglich die EINZELNEN Eintraege, entfernte damit in mehreren Ketten
-  // wiederkehrende Begriffe (z.B. "Deutschland") und - weil auch alle Trenner
-  // untereinander gleich sind - bis auf einen saemtliche Zeilenumbrueche. Aus
-  // drei Ketten wurden so zwei verstuemmelte (2026-08-11 gemeldet).
-  //
-  // Verglichen wird die SICHTBARE Wertefolge einer Kette in ihrer Reihenfolge:
-  //   A B C / A D / A D C / A B C / C A B
-  // ergibt A B C / A D / A D C / C A B - nur die Wiederholung faellt weg,
-  // "C A B" ist eine andere Kette als "A B C".
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   private function uniqueSubjectChains($Retn)
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // 1. In Ketten zerlegen: die vollstaendigen Eintraege und - getrennt davon -
-    //    nur die sichtbaren Werte, die den Vergleich tragen.
+    
+    
     $Chains = array();
     $Texts  = array();
     $Cur    = array();
@@ -2666,11 +2666,11 @@ class marc
     }
     if ( count($Cur) )  { $Chains[] = $Cur; $Texts[] = $CurTxt; }
 
-    // 2. Doppelte Ketten entfernen. array_unique() ueber die serialisierten
-    //    Wertefolgen behaelt jeweils die ERSTE und liefert deren Positionen mit.
+    
+    
     $Keep = array_keys($this->CS->getUniqueMultArray($Texts));
 
-    // 3. Wieder zu einer flachen Liste mit fortlaufenden Schluesseln zusammensetzen.
+    
     $Out  = array();
     $Item = 0;
     foreach ( $Keep as $K )
@@ -2753,7 +2753,7 @@ class marc
                                       );
     }
 
-    // Doppelte Schlagwortketten entfernen - siehe uniqueSubjectChains().
+    
     $Retn = $this->uniqueSubjectChains($Retn);
 
     $Returns = array();
@@ -3071,7 +3071,7 @@ class marc
     $Note = array();
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "500" => array("a")));
-    // if ( empty($Recs) )  return array();
+    
     foreach ( $Recs as $Rec )
     {
       if ( isset($Rec["a"]["0"]) )
@@ -3085,7 +3085,7 @@ class marc
     }
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "255" => array("a","b","c")));
-    // if ( empty($Recs) )  return array();
+    
     foreach ( $Recs as $Rec )
     {
       if ( isset($Rec["a"]["0"]) )
@@ -3127,7 +3127,7 @@ class marc
     }
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "383" => array("c")));
-    // if ( empty($Recs) )  return array();
+    
     foreach ( $Recs as $Rec )
     {
       if ( isset($Rec["c"]["0"]) )
@@ -3146,7 +3146,7 @@ class marc
 
 
     $Recs = $this->getCompleteArray(array($this->Prefix . "384" => array("a")));
-    // if ( empty($Recs) )  return array();
+    
     foreach ( $Recs as $Rec )
     {
       if ( isset($Rec["a"]["0"]) )
@@ -3271,12 +3271,12 @@ class marc
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // Set OriginalYear
+    
     $this->OriginalYear = ( isset($this->Convert[$this->Prefix . "008"]) && substr($this->Convert[$this->Prefix . "008"],6,1) == "r" )
                           ? substr($this->Convert[$this->Prefix . "008"],11,4)
                           : "";
 
-    $Fields  = array();          // Sequenz  Label               Text-Records                        Link
+    $Fields  = array();          
     $Fields += $this->formatTitle  (   "01", "title");
     $Fields += $this->formatSimple (   "02", "uniformtitle",     array("240" => array("a","f","g","k","m","n","o","p","r","s")));
     $Fields += $this->formatPart   (   "03", "part");
@@ -3331,26 +3331,26 @@ class marc
     $Fields += $this->formatSimple (   "51", "orderid",           array("028" => array("a")));
     $Fields += $this->formatCollec (   "52", "collection");
 
-    // Technical Items (not for display)
+    
     $Fields += $this->internArtl   (  "100", "article");
     $Fields += $this->internPubl   (  "101", "publisher");
     $Fields += $this->internDetl   (  "102", "details");
     $Fields += $this->internLink   (  "103", "links");
 
-    // Add original characters
+    
     $Fields  = $this->AddOriginalCharacters($Fields);
 
-    // Reihenfolge UND Darstellungsart der Bibline-Zeilen kommen ab sofort aus
-    // der API, nicht mehr aus dem Client (im alten User-Modul lagen sie in
-    // stores/appl.js als "biblines"-Listen). Damit steuert die API, was in der
-    // kleinen Kachel ("title") und was in der Detailansicht ("detail")
-    // erscheint, in welcher Folge und in welcher Form:
-    //   norm  - Beschriftung + Werte nebeneinander (Standard)
-    //   block - mehrspaltig
-    //   long  - langer Text, im Client aufklappbar
-    //   class - Klassifikation, aufklappbar mit Ober-/Unterbegriffen
-    // Gefiltert auf tatsaechlich vorhandene Felder, damit der Client nichts
-    // mehr pruefen muss. Rein additiv - aeltere Clients ignorieren "groups".
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     $Groups = array("title" => array(), "detail" => array());
     foreach ( $this->biblineLayout() as $Section => $Lines )
     {
@@ -3360,11 +3360,11 @@ class marc
       }
     }
 
-    // Beschriftung lueckenlos nachziehen (20.08.2026): Die meisten Zeilen
-    // bekommen ihr "label" schon beim Aufbau, einige (edition, isbn,
-    // publisher, details, links) trugen bisher nur den "code" - dann musste
-    // der Client daraus selbst "bibline.<code>" bilden. Das faellt weg: hier
-    // wird die Beschriftung fuer JEDE Zeile gesetzt, die noch keine hat.
+    
+    
+    
+    
+    
     foreach ( $Fields as $ID => $Field )
     {
       if ( !is_array($Field) || ( isset($Field["label"]) && $Field["label"] !== "" ) )  continue;
@@ -3382,10 +3382,10 @@ class marc
                  "after"      => array());
   }
 
-  // Reihenfolge und Darstellungsart der Bibline-Zeilen - 1:1 uebernommen aus
-  // dem alten User-Modul (stores/appl.js, "biblines"), damit die Anzeige
-  // unveraendert bleibt. Der Abschnitt "unused" von dort entfaellt: was hier
-  // nicht steht, wird nicht ausgeliefert.
+  
+  
+  
+  
   private function biblineLayout()
   {
     return array(
@@ -3494,14 +3494,14 @@ class marc
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // Take only first sub-subrecord and therefore create flat array
+    
     $Output = array();
     $Count  = 0;
     foreach ( $Filter as $Field => $Subfields )
     {
       if ( array_key_exists($Field, $this->Convert) )
       {
-        // $this->CS->debug("AOX23",$this->Convert[$Field]);
+        
         foreach ($this->Convert[$Field] as $Record)
         {
           foreach ($Subfields as $Subfield)
@@ -3549,21 +3549,21 @@ class marc
     return $Output;
   }
 
-  // Fehlenden zweiten Schraegstrich im Schema ergaenzen (01.09.2026)
-  //
-  // In den Katalogdaten stehen vereinzelt Adressen mit nur EINEM Schraegstrich:
-  //
-  //   https:/doi.org/10.1515/abitech-2026-0030
-  //
-  // Browser richten das beim Anklicken still, parse_url() dagegen nicht - dort
-  // ist "doi.org" dann kein Rechnername mehr, sondern Teil des Pfades, und
-  // getHost() liefert nichts zurueck. In der alten Oberflaeche stand daneben
-  // deshalb eine LEERE Klammer: "Resolving-System, kostenfrei ()".
-  //
-  // Repariert wird ausschliesslich dieser eine Fall - "http:/" oder "https:/"
-  // ohne folgenden zweiten Schraegstrich. Alles andere bleibt unangetastet:
-  // relative Adressen, mailto:, Schemata mit einem Schraegstrich, an denen
-  // nichts falsch ist.
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   private function repairScheme($Url)
   {
     return preg_replace('~^(https?):/(?!/)~i', '$1://', (string) $Url);
@@ -3584,26 +3584,26 @@ class marc
     $SkipMans = ( isset($this->CS->configs["item"]["skipmans"])           && trim($this->CS->configs["item"]["skipmans"]) )            ? array_filter(explode(",", $this->CS->configs["item"]["skipmans"]))         : array();
     $BlackCom = ( isset($this->CS->configs["item"]["commentblacklist"])   && trim($this->CS->configs["item"]["commentblacklist"]) )    ? array_filter(explode(",", $this->CS->configs["item"]["commentblacklist"])) : array();
 
-    // Container
+    
     $Items  = array();
 
-     // Always because of $AddItems
+     
 
-    // Get MARC items
+    
     $MExps = $this->getCompleteArray(array($this->Prefix . "980" => array("1","2","a","b","c","d","e","f","g","h","j","k","l","u","x","y","z")));
 
-    // Backup full recs
+    
     $M980s = $MExps;
 
     $ILNGs = array();
     foreach ($MExps as $Rec)
     {
-      // Skip Items from other mandants
+      
       $MAN = isset($Rec["y"][0]) ? $Rec["y"][0] : "";
       if ( $MAN && count($SkipMans) )
       {
-        // $this->CS->debug("ALX", $SkipMans);
-        // $this->CS->debug("ALX", $MAN);
+        
+        
 
         $Break = false;
         foreach ( $SkipMans as $SM )
@@ -3622,9 +3622,9 @@ class marc
         if ( $Break ) continue;
       }
 
-      // $this->CS->debug("ALX", "Yes");
+      
 
-      // Skip FakeItems without ILN or with ILN=s
+      
       $ALI = isset($Rec["e"][0]) ? $Rec["e"][0] : "";
       if ( !$ALI
         || !$ALI && in_array("empty",        $SkipAUIs)
@@ -3634,10 +3634,10 @@ class marc
         $AddItems[] = $Rec;
       }
 
-      // $this->CS->debug("ALX", $Rec["2"][0] . ": " . $ALI);
-      // $this->CS->debug("ALX", $SkipAUIs);
-      // $this->CS->debug("ALX", $this->Online);
-      // $this->CS->debug("ALX327", $AddItems);
+      
+      
+      
+      
 
       if ( !$this->Online || $HWithO )
       {
@@ -3655,11 +3655,11 @@ class marc
 
         if ( isset($Rec["2"][0]) && isset($Rec["b"][0]) ) $ILNGs[$Rec["2"][0]][] = strtoupper($Rec["b"][0]);
 
-        // $this->CS->debug("ALX", "Found: " .  $ExpID);
+        
 
         foreach ($Rec as $Code => $SubRecs)
         {
-          // Add displays MARC
+          
           if ( is_array($SubRecs) )
           {
             $Items[$ExpID][$Code] = $SubRecs;
@@ -3675,12 +3675,12 @@ class marc
     if ( !$this->Online && !$HWithO ) return $Items;
     if ( !isset($this->CS->configs["item"]["links"]) || $this->CS->configs["item"]["links"] == "n" ) return $Items;
 
-    // Determine OA
+    
     $OA    = $this->get856OA();
 
-    // Get local onlines
+    
 
-    // Group records together based on 1 & 2
+    
     $MExps     = $this->getFlatArray(array($this->Prefix . "981" => array("1","2","r","w","y")));
     $Grps      = array();
     $GrpI      = 0;
@@ -3713,11 +3713,11 @@ class marc
       }
     }
 
-      // if ( isset($Rec["y"]) )  $Grps[$GID]["text"] = $Rec["y"];
-      // if ( isset($Rec["w"]) )  $Grps[$GID]["usagelink"] = $Rec["w"];
+      
+      
 
-    // $this->CS->debug("ALX327", $Grps);
-    // $this->CS->debug("ALX327", $LicLinks);
+    
+    
 
     foreach ($Grps as &$GVals)
     {
@@ -3732,10 +3732,10 @@ class marc
         $Items[$ExpID]["usagelinks"] = $LicLinks[$Items[$ExpID]["iln"] . "_" . $Items[$ExpID]["enr"]];
       }
 
-      // Add additional records AddItems
+      
       if ( count($AddItems) )
       {
-        // $this->CS->debug("AL41X", $AddItems);
+        
 
         $Items[$ExpID]["comment"] = array();
         $Items[$ExpID]["stock"]   = array();
@@ -3744,10 +3744,10 @@ class marc
           if ( isset($AIRec["k"]) )
           {
 
-            // $this->CS->debug("AL41X", $BlackCom);
+            
             foreach ( $AIRec["k"] as $K )
             {
-              // $this->CS->debug("AL41X", $K);
+              
               if (!in_array($K, $BlackCom)) $Items[$ExpID]["comment"][] = $K;
             }
           }
@@ -3761,10 +3761,10 @@ class marc
         }
       }
 
-      // Add additional records
+      
       if ( count($M980s) )
       {
-        // $this->CS->debug("AL41X", $AddItems);
+        
         foreach ( $M980s as $M980Rec )
         {
           if ( !isset($M980Rec["1"][0]) || $M980Rec["1"][0] != $Items[$ExpID]["enr"] )  continue;
@@ -3789,31 +3789,31 @@ class marc
       }
     }
 
-    // $this->CS->debug("ALEXMARC", $Items);
+    
 
-    // return local onlines without globals
+    
     if ( $this->Counts["online"] > 0 && $PLocO ) return $Items;
 
-    // $this->CS->debug("ALEXMARC", $this->ID);
-    // $this->CS->debug("ALEXMARC", $OA);
+    
+    
 
-    // Get global onlines
+    
     $MasterLink = "";
     $MExps  = $this->getFlatArray(array($this->Prefix . "856" => array("I1","I2","3","t","u","x","y","z")));
 
     foreach ($MExps as $Rec)
     {
       $ExpID = "onlineglobal_" . $this->Counts["online"]++;
-      // $this->CS->debug("AÖXR", $Rec);
+      
 
       if ( isset($Rec["I2"]) && in_array($Rec["I2"], $SkipI2s) ) continue;
 
-      // MasterLink
+      
       if ( ( !isset($Rec["I1"]) || !isset($Rec["I2"]) )
         && ( !( isset($Rec["I1"]) && $Rec["I1"] == "4"
-          && isset($Rec["I2"]) && $Rec["I2"] == "2" ) )        // NOT
-          // Schalter statt Clientname (03.09.2026): "y" laesst JEDEN Link zum
-            // Masterlink werden, nicht nur einen mit x="Resolving-System".
+          && isset($Rec["I2"]) && $Rec["I2"] == "2" ) )        
+          
+            
           && ( ( isset($this->CS->configs["item"]["masterlinkany"])
               && $this->CS->configs["item"]["masterlinkany"] == "y" )
             || (isset($Rec["x"]) && $Rec["x"] == "Resolving-System") )
@@ -3836,8 +3836,8 @@ class marc
         if ( $Code == "z")  $Text[] = $Value;
         if ( $Code == "u")
         {
-          // Adresse vor der Weitergabe geraderuecken - sonst scheitert auch
-          // die Rechnernamen-Ermittlung darunter (siehe repairScheme).
+          
+          
           $Value = $this->repairScheme($Value);
           $Items[$ExpID]["link"] = $Value;
           $Items[$ExpID]["host"] = $this->CS->getHost($Value);
@@ -3846,10 +3846,10 @@ class marc
       $Items[$ExpID]["text"] = implode(", ", $Text);
       $Items[$ExpID]["oa"]   = $OA;
 
-      // Add additional records
+      
       if ( count($AddItems) )
       {
-        // $this->CS->debug("AL41X", $AddItems);
+        
         $Items[$ExpID]["comment"] = array();
         $Items[$ExpID]["stock"]   = array();
         foreach ( $AddItems as $AIRec )
@@ -3883,8 +3883,8 @@ class marc
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // GetLinks    (Links)
-    // GetSearches (Suchen)
+    
+    
 
 
     if ( !isset($this->CS->configs["item"]["links"]) || $this->CS->configs["item"]["links"] == "n" ) return array();
@@ -3892,17 +3892,17 @@ class marc
     $HWithO   = ( isset($this->CS->configs["item"]["hapticwithonline"])   && $this->CS->configs["item"]["hapticwithonline"]   == "y" ) ? true : false;
     if ( !$this->Online && !$HWithO ) return array();
 
-    // Container
+    
     $Links = array();
 
-    // Get MARC items
+    
     $MExps = $this->getCompleteArray(array($this->Prefix . "776" => array("I2", "d", "i", "n", "o")));
 
-    // $this->CS->debug("ALX", $MExps);
+    
 
     foreach ($MExps as $Rec)
     {
-      // $this->CS->debug("ALX", $Rec);
+      
       if ( !isset($Rec["I2"]["0"]) || $Rec["I2"]["0"] != "8" ) continue;
       if ( !isset($Rec["o"]["0"])  || substr($Rec["o"]["0"],0,4) != "urn:" )  continue;
 
@@ -3923,7 +3923,7 @@ class marc
       $Links[$ExpID]["epn"]    = $ExpID;
     }
 
-    // $this->CS->debug("ALX", $Links);
+    
     return $Links;
   }
 
@@ -3931,22 +3931,22 @@ class marc
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // GetLinks    (Links)
-    // GetSearches (Suchen)
+    
+    
 
     if ( !isset($this->CS->configs["item"]["siblings"]) || $this->CS->configs["item"]["siblings"] == "n" ) return array();
 
-    // Container
+    
     $Searches = array();
 
-    // Get MARC items
+    
     $MExps = $this->getCompleteArray(array($this->Prefix . "776" => array("I2", "d", "i", "n", "w", "z")));
 
-    // $this->CS->debug("ALX", $MExps);
+    
 
     foreach ($MExps as $Rec)
     {
-      // $this->CS->debug("ALX", $Rec);
+      
       if ( !isset($Rec["I2"]["0"]) || $Rec["I2"]["0"] != "8" ) continue;
       if ( ( !isset($Rec["z"]["0"])  || !trim($Rec["z"]["0"]) )
         && ( !isset($Rec["w"]["0"])  || !in_array(substr($Rec["w"]["0"],0,8), array("(DE-601)","(DE-627)"))) ) continue;
@@ -3970,7 +3970,7 @@ class marc
       $Searches[$ExpID]["epn"]    = $ExpID;
     }
 
-    // $this->CS->debug("ALX", $Searches);
+    
     return $Searches;
   }
 
@@ -4027,30 +4027,30 @@ class marc
         }
       }
     }
-    /*
-    if ( !$GNDID && isset($Norms["0"]) )
-    {
-      foreach ( $Norms["0"] as $One )
-      {
-        if ( isset($One) && substr($One,0,8) == "(DE-627)" )
-        {
-          $GNDID = substr($One,8);
-          break;
-        }
-      }
-    }
-    if ( !$GNDID && isset($Norms[" 0"]) )
-    {
-      foreach ( $Norms[" 0"] as $One )
-      {
-        if ( isset($One) && substr($One,0,8) == "(DE-627)" )
-        {
-          $GNDID = substr($One,8);
-          break;
-        }
-      }
-    }
-    */
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     if ( $GNDID )
     {
@@ -4077,9 +4077,9 @@ class marc
                                  'isa','topic','relatedperson','relatedorganisation','relatedevent',
                                  'biographicalorhistoricalinformation']];
 
-      // $this->CS->debug("ALEXNORM1", $Type . " - " . $GNDID);
+      
       $Pack = $this->CS->getNormsDB($Type, $GNDID);
-      // $this->CS->debug("ALEXNORM1", $Pack);
+      
       if ( isset($Pack["data"]) && is_array($Pack["data"]) && count($Pack["data"]) )
       {
         $More["type"]  = $Type;
@@ -4090,12 +4090,12 @@ class marc
         foreach ( $Pack["data"] as $Key => $Val )
         {
           if ( $Key == "depiction" )  continue;
-          // $this->CS->debug("ALEXNORM2", $Type . "." . $Key);
+          
           $Text = $this->CS->getText($Type . "." . strtolower($Key));
           if ( !$Text )   $Text = $Key;
 
-          // $this->CS->debug("ALEXNORM1", $Key);
-          // $this->CS->debug("ALEXNORM2", $Val);
+          
+          
 
           if ( $Key == "gender"   && isset($Val["label"]) )    $Val = $Val["label"];
 
@@ -4121,8 +4121,8 @@ class marc
               }
             }
             $Val = $Tmp;
-            // $this->CS->debug("ALEXNORM1", $Val);
-            // continue;
+            
+            
           }
           elseif ( is_array($Val) && count($Val) )
           {
@@ -4138,7 +4138,7 @@ class marc
                                                   "data"  => $Val);
         }
 
-        // Sort stuff
+        
         $Sorted = [];
         foreach ($Sort[$Type] as &$Key)
         {
@@ -4149,7 +4149,7 @@ class marc
         $More["data"] = $Sorted;
 
       }
-      // $this->CS->debug("ALEXNORM2", $More);
+      
     }
     return $More;
   }
@@ -4158,13 +4158,13 @@ class marc
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // ILNs
+    
     foreach ($this->ColDetails as $One)
     {
       if ( substr($One, 0, 8) == "GBV_ILN_" && isset($this->CS->configs["ilnmans"]) && in_array(substr($One,8),  $this->CS->configs["ilnmans"]) ) return true;
     }
 
-    // Cols
+    
     if ( $this->OwnCollection )  return true;
 
     return false;
@@ -4357,14 +4357,14 @@ class marc
     return "";
   }
 
-  // Reines Zerlegen des MARC-XML - ohne Clientbezug UND ohne Praefix
-  // (03.09.2026).
-  //
-  // Die Feldnamen heissen hier schlicht "980", "008", "Lead". Das Praefix - "M"
-  // fuer den eigenen Satz, "PM" fuer denselben Satz in der Rolle des
-  // Elternteils - kommt erst in getReducedConvert() dazu. Damit ist der
-  // zerlegte Satz von der Rolle unabhaengig: EINE Datei je Id genuegt, und
-  // derselbe Satz kann einmal Kind und einmal Elternteil sein.
+  
+  
+  
+  
+  
+  
+  
+  
   private function parseMarcXml($XML)
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -4375,38 +4375,38 @@ class marc
     }
     catch (Exception $e)
     {
-      // $this->CS->debug("XMLError", $XML);
+      
       return array();
     }
 
     $Convert = array();
     if ( !isset($xml->record[0]) ) return $Convert;
 
-    // Leader
+    
     $Convert["Lead"] = (isset($xml->record[0]->leader)) ? (string) $xml->record[0]->leader : "";
 
-    // Control Fields
+    
     foreach($xml->record[0]->controlfield as $CF)
     {
       $Convert[(string) $CF["tag"]] = (string) $CF[0];
     }
 
-    // Data Fields
+    
     $CTags    = array();
-    $ErsteSub = array();   // erstes Unterfeld je Feld >= 900, s. reduceToClient()
+    $ErsteSub = array();   
     foreach($xml->record[0]->datafield as $DF)
     {
       $Tag = (string) $DF["tag"];
 
-      // Die Auswahl nach ILN, Mandant und ISIL steht seit 03.09.2026 NICHT mehr
-      // hier im Zerleger, sondern hinter der Schleife in reduceToClient().
-      // Grund: der zerlegte Satz soll clientneutral werden (Stufe 2 des
-      // Satz-Caches). Erst kurz vor dem Ausliefern wird er auf das reduziert,
-      // was dieser Client sehen darf.
-      //
-      // Hier wird nur gemerkt, was die Auswahl braucht und was aus dem
-      // zerlegten Satz nicht mehr hervorginge: der Wert des ERSTEN Unterfeldes
-      // (fuer 912; weiter unten werden die Unterfelder alphabetisch sortiert).
+      
+      
+      
+      
+      
+      
+      
+      
+      
       if ( $Tag >= "900" )
       {
         $ErsteSub[$Tag][isset($CTags[$Tag]) ? $CTags[$Tag] + 1 : 0] = (string) $DF->subfield;
@@ -4424,11 +4424,11 @@ class marc
       $DFI = $CTags[$Tag];
       $Convert[$Tag][$DFI] = array();
 
-      // Indicators
+      
       if ( trim((string) $DF["ind1"]) )  $Convert[$Tag][$DFI]["I1"] = (string) $DF["ind1"];
       if ( trim((string) $DF["ind2"]) )  $Convert[$Tag][$DFI]["I2"] = (string) $DF["ind2"];
 
-      // Subfields
+      
       $CSubs = array();
       foreach($DF->subfield as $SF)
       {
@@ -4448,24 +4448,24 @@ class marc
     }
     ksort($Convert);
 
-    // Zerlegt ist der Satz jetzt CLIENTNEUTRAL. Zusammen mit $ErsteSub (dem
-    // ersten Unterfeld je Feld ab 900) ist das alles, was reduceToClient()
-    // spaeter braucht - deshalb wird genau dieses Paar zwischengespeichert
-    // (03.09.2026, Stufe 2).
+    
+    
+    
+    
     return array("marc" => $Convert, "erstesub" => $ErsteSub);
   }
 
-  // Zerlegen ODER aus dem gemeinsamen Bestand holen, danach fuer diesen Client
-  // reduzieren (03.09.2026).
-  //
-  // Das Zerlegen ist der teure Teil (gemessen 0,56 ms je Satz gegen 0,06 ms fuer
-  // alles Weitere), und sein Ergebnis ist fuer jeden Client dasselbe. Es liegt
-  // deshalb in EINER Datei je Satz, ohne Client und ohne Sprache:
-  //
-  //     caches/ids/<Id in Vierergruppen>/marcxml.inc
-  //
-  // Gueltig bleibt sie, solange das Indexfeld "up_date" unveraendert ist -
-  // dieselbe Regel wie bei readCache2Marc() in user.php.
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   private function getReducedConvert($XML, $ID = "", $UpDate = "")
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -4474,11 +4474,11 @@ class marc
     if ( !is_array($Neutral) )
     {
       $Neutral = $this->parseMarcXml($XML);
-      // Die wenigen Werte, die doConvert() ausser dem MARC-Satz noch aus der
-      // Solr-Antwort nimmt, gehen mit in den Bestand (03.09.2026). Sie sind
-      // ebenso clientneutral, und mit ihnen laesst sich ein Satz spaeter ganz
-      // ohne Solr-Abfrage wieder aufbauen - das spart beim Nachladen der
-      // Elternsaetze den zweiten Weg zum Index.
+      
+      
+      
+      
+      
       $Neutral["solr"] = array(
         "collection"         => isset($this->SolrOne["collection"])         ? $this->SolrOne["collection"]         : array(),
         "collection_details" => isset($this->SolrOne["collection_details"]) ? $this->SolrOne["collection_details"] : array(),
@@ -4490,10 +4490,10 @@ class marc
         $this->CS->writeMarcNeutral($ID, $Neutral, $UpDate);
     }
 
-    // Jetzt bekommt der Satz seine ROLLE: "M" fuer den eigenen Satz, "PM" fuer
-    // denselben Satz als Elternteil. Vorher ist er rollenfrei gespeichert -
-    // deshalb genuegt EINE Datei je Id, gleichgueltig, in welcher Rolle ihn
-    // eine Bibliothek zuerst gesehen hat.
+    
+    
+    
+    
     $Convert  = $this->setzePraefix(isset($Neutral["marc"])     ? $Neutral["marc"]     : array());
     $ErsteSub = $this->setzePraefix(isset($Neutral["erstesub"]) ? $Neutral["erstesub"] : array());
 
@@ -4502,12 +4502,12 @@ class marc
     return $Convert;
   }
 
-  // Feldnamen um das Praefix der Rolle ergaenzen (03.09.2026).
-  //
-  // Der Zerleger legt sie rollenfrei ab ("980", "Lead"); erst hier werden
-  // daraus "M980"/"PM980" bzw. "Lead"/"PLead". Alles Weitere - reduceToClient()
-  // und saemtliche Auswertungen in marc.php und item.php - arbeitet
-  // unveraendert mit den vollen Namen.
+  
+  
+  
+  
+  
+  
   private function setzePraefix($Felder)
   {
     if ( !is_array($Felder) || !count($Felder) )  return array();
@@ -4522,17 +4522,17 @@ class marc
     return $Neu;
   }
 
-  // Felder ab 900 auf das reduzieren, was DIESER Client sehen darf.
-  //
-  // Wortgleiche Uebernahme der Bedingungen, die bis zum 03.09.2026 im Zerleger
-  // standen (dort als "continue", bevor das Feld ueberhaupt angelegt wurde):
-  //
-  //   912          Kennungen fremder ILN/ISIL, dazu SYSFLAG_1 und SYSFLAG_A
-  //   >= 900       Saetze fremder ILN            (configs["ilns"])
-  //   980          zusaetzlich fremde Mandanten  (configs["ilnandman"])
-  //
-  // $ErsteSub traegt je Feld den Wert des ersten Unterfeldes - fuer 912 wurde
-  // frueher genau dieser geprueft.
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   private function reduceToClient(&$Convert, $ErsteSub)
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -4560,7 +4560,7 @@ class marc
         }
         else
         {
-          // Wie frueher: der ZULETZT gelesene Wert des jeweiligen Unterfeldes
+          
           $SF2 = ( isset($Rec["2"]) && is_array($Rec["2"]) && count($Rec["2"]) ) ? (string) end($Rec["2"]) : "";
           $SFY = ( isset($Rec["y"]) && is_array($Rec["y"]) && count($Rec["y"]) ) ? substr((string) end($Rec["y"]), 1) : "";
 
@@ -4578,8 +4578,8 @@ class marc
         if ( $Weg )  unset($Convert[$Tag][$DFI]);
       }
 
-      // Bleibt nichts uebrig, faellt das Feld ganz weg - wie frueher, wo es dann
-      // gar nicht erst angelegt wurde. Sonst die Zaehlung wieder schliessen.
+      
+      
       if ( !count($Convert[$Tag]) )  unset($Convert[$Tag]);
       else                           $Convert[$Tag] = array_values($Convert[$Tag]);
     }
@@ -4722,7 +4722,7 @@ class marc
 
   private function get856OA()
   {
-    // Get global onlines
+    
     $MExps = $this->getFlatArray(array($this->Prefix . "856" => array("z")));
     foreach ($MExps as $Rec)
     {
@@ -4765,7 +4765,7 @@ class marc
                 {
                   if ( $Rec["text"] )
                   {
-                    $Rec["text"] .= " : " . $Value;   // Append values
+                    $Rec["text"] .= " : " . $Value;   
                   }
                   else
                   {
@@ -4798,23 +4798,23 @@ class marc
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // Load MARC library and pass params
+    
     if ( !isset($One["fullrecord_marcxml"]) || !isset($One["id"]) ) return;
     $this->Counts = array("search" => 0, "physical" => 0, "online" => 0);
 
-    // MasterLink zuruecksetzen (03.09.2026).
-    //
-    // Das marc-Objekt verarbeitet ALLE Saetze einer Trefferseite nacheinander,
-    // und $this->MasterLink wird erst am ENDE von getItems() gesetzt. Die
-    // Funktion hat drei fruehe Ausstiege (nicht online und kein
-    // hapticwithonline; item.links = n; eigene Onlineexemplare bei
-    // preferlocalonlines). Nimmt ein Satz einen davon, behielt er den Wert des
-    // ZUVOR verarbeiteten Satzes - beim ersten Satz war das null, danach "" oder
-    // sogar der Verweis des Nachbarn. Daher stand bei denselben Saetzen mal ""
-    // und mal null, je nachdem, welche vorher aus dem Cache kamen.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     $this->MasterLink = "";
 
-    $this->SolrOne       = $One;   // fuer den neutralen Bestand, s. getReducedConvert()
+    $this->SolrOne       = $One;   
     $this->ID            = ($One["id"] != "" && $One["id"] != "0") ? (string) $One["id"] : "RAND".rand(100000000,999999999);
     $this->Collection    = ( isset($One["collection"]) )                                   ? $One["collection"]           : array();
     $this->ColDetails    = ( isset($One["collection_details"]) )                           ? $One["collection_details"]   : array();
@@ -4823,11 +4823,11 @@ class marc
     $this->Online        = ( isset($One["remote_bool"]) && $One["remote_bool"] == "true" ) ? true                         : false;
     $this->Prefix        = $Prefix;
     $this->Convert       = $this->getReducedConvert($One["fullrecord_marcxml"], $this->ID,
-                                                     isset($One["up_date"]) ? (string) $One["up_date"] : "");  // Important for functions below
+                                                     isset($One["up_date"]) ? (string) $One["up_date"] : "");  
     $this->Parents       = $this->getParents();
-    // OwnCollection MUSS vor getOwnILNsOrCols() stehen: die Funktion wertet
-    // $this->OwnCollection mit aus. Stand es danach, galt beim Kind noch der
-    // Wert des ZUVOR verarbeiteten Satzes - also des Elternteils (20.08.2026).
+    
+    
+    
     $this->OwnCollection = (count(array_intersect($this->Collection, $this->CS->configs["mycolls"]))) ? true : false;
     $this->Owner         = $this->getOwnILNsOrCols();
     $this->ArticleLink   = $this->getArticleLinks();
@@ -4839,16 +4839,16 @@ class marc
     $this->Searches      = $this->getSearches();
     $this->Links         = $this->getLinks();
 
-     // Log ID list for marc
+     
     if ( APPDEBUG["IDS"] && ( (is_array(APPDEBUG["IDS"]) && in_array($this->ID, APPDEBUG["IDS"])) || (!is_array(APPDEBUG["IDS"]) && APPDEBUG["IDS"] == $this->ID)) )
     {
       $this->CS->debug("IDS", $this->ID);
       $this->CS->debug("MCD", $this->Convert);
     }
 
-    // $this->CS->debug("ALXMA", $this->Convert );
+    
 
-    // Log media data
+    
 
     if ( APPDEBUG["MCD"] ) $this->CS->debug("MCD", $this->Convert);
     $Media  = array
@@ -4875,8 +4875,8 @@ class marc
       "links"         => $this->Links,
       "ilngroups"     => $this->ILNGroups,
       "masterlink"    => $this->MasterLink,
-      "bibliographic" => $this->Fields,     // Should be cached as well and
-      "marc"          => $this->Convert     // will be removed later
+      "bibliographic" => $this->Fields,     
+      "marc"          => $this->Convert     
     );
 
     if ( isset($this->CS->configs["item"]["use264casyear"]) && $this->CS->configs["item"]["use264casyear"] == "y"
@@ -4885,26 +4885,26 @@ class marc
       $Media["year"] = $this->Convert["M264"][0]["c"][0];
     }
 
-    // Log ID list for media
+    
     if ( APPDEBUG["IDS"] && ( (is_array(APPDEBUG["IDS"]) && in_array($this->ID, APPDEBUG["IDS"])) || (!is_array(APPDEBUG["IDS"]) && APPDEBUG["IDS"] == $this->ID)) )
     {
       $this->CS->debug("IDS", $this->ID);
       $this->CS->debug("MED", $Media);
     }
 
-    // Log media data
+    
     if ( APPDEBUG["MED"] ) $this->CS->debug("MED", $Media);
 
     return $Media;
   }
 
-  // *******************************************************************
-  // ************* P R O T E C T E D ***********************************
-  // *******************************************************************
+  
+  
+  
 
-  // *******************************************************************
-  // ************* P U B L I C *****************************************
-  // *******************************************************************
+  
+  
+  
   public function getConverts($Add, $Prefix = "M")
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -4918,56 +4918,56 @@ class marc
         $ID = isset($SolrOne["id"]) ? $SolrOne["id"] : "";
         if ( !$ID ) continue;
 
-        // Stand des Satzes im Index - er entscheidet ueber den Cache
-        // (03.09.2026). Fehlt das Feld, greift wie bisher das Alter.
+        
+        
         $UpDate = isset($SolrOne["up_date"]) ? (string) $SolrOne["up_date"] : "";
         $this->CS->works["updates"][$ID] = $UpDate;
 
-        // Der clientspezifische Satz-Cache ist zum 03.09.2026 entfallen: er
-        // brachte nichts mehr, seit das Zerlegen des MARC-Satzes und die
-        // Auskuenfte der zentralen Datenbank in gemeinsamen Bestaenden liegen
-        // (gemessen 1609 ms ohne ihn gegen 1302 ms mit ihm - Rauschen). Der
-        // Satz wird also immer gebaut; teuer war daran nie das Bauen.
+        
+        
+        
+        
+        
         {
-          // Convert and store data
+          
           $One = $this->doConvert($SolrOne, $Prefix);
 
           if ( !$this->add )
           {
-          	// $this->CS->debug("ALX C", $ID);
+          	
           	
             $this->CS->works["marc"][$ID] = $One;
             $this->CS->results["data"][]  = $One;
 
-            // $this->CS->debug("ALXMMA", $One);
+            
 
-            // Update hierarchy
+            
             if ( isset($One["format"]) )
             {
               if ( isset($One["rootid"]) && $One["rootid"] != "" )
               {
-                // Array from child to parent (Only one parent)
+                
                 $this->CS->hierarchy["childs"][$ID]               = $One["rootid"];
 
-                 // Array from parent to childs (multiple childs)
+                 
                 $this->CS->hierarchy["parents"][$One["rootid"]][] = $ID;
               }
             }
 
-            // $this->CS->debug("ALXMMA", $this->CS->hierarchy);
+            
 
             if ( isset($this->CS->display["marc"]) && $this->CS->display["marc"] )      $this->CS->results["marc"][$ID] = $this->Convert;
           }
           else
           {
-          	// $this->CS->debug("ALX P", $ID);
+          	
 
             $this->CS->works["add"][$ID] = $One;
 
             $CIDs = isset($this->CS->hierarchy["parents"][$ID]) ? $this->CS->hierarchy["parents"][$ID] : array();
             $Kids = array_flip(array_column($this->CS->results["data"], "id"));
 
-            // $this->CS->debug("ALX333", $Kids);
+            
 
             foreach ( $CIDs as $CID )
             {
@@ -4976,26 +4976,26 @@ class marc
               {
                 $this->CS->results["marc"][$CID] += $this->Convert;
 
-                // Bei aktivem articleparentshift wird der Besitz des Elternteils
-                // NICHT auf die Kinder vererbt: ErfurtUB besitzt nur die Eltern,
-                // nicht die Kinder, und die Eltern sollen nicht betrachtet
-                // werden. Gleiche Linie wie useParent() in item.php. (20.08.2026)
-                //
-                // Der frueher hier genannte Cache-Schaden - der Wert ging per
-                // writeMarc2Cache mit in die Datei und vergiftete sie dauerhaft - kann
-                // seit dem 03.09.2026 nicht mehr entstehen: der clientspezifische
-                // Satz-Cache ist entfallen, gespeichert wird nur noch der
-                // clientneutrale, zerlegte Satz.
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 $APSInherit = ( isset($this->CS->configs["item"]["articleparentshift"])
                              && trim($this->CS->configs["item"]["articleparentshift"]) == "y" ) ? true : false;
                 if ( $this->Owner && !$APSInherit && isset($this->CS->results["data"]) && is_array($this->CS->results["data"]) && count($this->CS->results["data"]) )
                 {
-                  // Inherit parent ownership to childs
+                  
                   if ( isset($Kids[$CID]) )
                   {
-                    // $this->CS->debug("ALX333", $this->CS->works["marc"][$CID]["owner"]);
+                    
                     $this->CS->works["marc"][$CID]["owner"] = 1;
-                    // $this->CS->debug("ALX333", $this->CS->works["marc"][$CID]["owner"]);
+                    
                   }
                 }
               }
@@ -5008,9 +5008,9 @@ class marc
     return;
   }
 
-  // **********************************************************************
-  // ************* A R E A  5 1 *******************************************
-  // **********************************************************************
+  
+  
+  
 
 }
 

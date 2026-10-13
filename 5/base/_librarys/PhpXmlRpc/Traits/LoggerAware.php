@@ -16,10 +16,10 @@ trait LoggerAware
         return self::$logger;
     }
 
-    /**
-     * @param $logger
-     * @return void
-     */
+    
+
+
+
     public static function setLogger($logger)
     {
         self::$logger = $logger;

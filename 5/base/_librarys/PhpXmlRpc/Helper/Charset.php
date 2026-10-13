@@ -6,17 +6,17 @@ use PhpXmlRpc\Exception\ValueErrorException;
 use PhpXmlRpc\PhpXmlRpc;
 use PhpXmlRpc\Traits\DeprecationLogger;
 
-/**
- * @todo implement an interface
- */
+
+
+
 class Charset
 {
     use DeprecationLogger;
 
-    // tables used for transcoding different charsets into us-ascii xml
+    
     protected $xml_iso88591_Entities = array("in" => array(), "out" => array());
 
-    //protected $xml_cp1252_Entities = array('in' => array(), out' => array());
+    
 
     protected $charset_supersets = array(
         'US-ASCII' => array('ISO-8859-1', 'ISO-8859-2', 'ISO-8859-3', 'ISO-8859-4',
@@ -26,16 +26,16 @@ class Charset
             'EUC-JP', 'EUC-', 'EUC-KR', 'EUC-CN',),
     );
 
-    /** @var Charset $instance */
+    
     protected static $instance = null;
 
-    /**
-     * This class is singleton for performance reasons.
-     *
-     * @return Charset
-     *
-     * @todo should we just make $xml_iso88591_Entities a static variable instead ?
-     */
+    
+
+
+
+
+
+
     public static function instance()
     {
         if (self::$instance === null) {
@@ -45,29 +45,29 @@ class Charset
         return self::$instance;
     }
 
-    /**
-     * Force usage as singleton.
-     */
+    
+
+
     protected function __construct()
     {
     }
 
-    /**
-     * @param string $tableName
-     * @return void
-     * @throws ValueErrorException for unsupported $tableName
-     *
-     * @todo add support for cp1252 as well as latin-2 .. latin-10
-     *       Optimization creep: instead of building all those tables on load, keep them ready-made php files
-     *       which are not even included until needed
-     * @todo should we add to the latin-1 table the characters from cp_1252 range, i.e. 128 to 159 ?
-     *       Those will NOT be present in true ISO-8859-1, but will save the unwary windows user from sending junk
-     *       (though no luck when receiving them...)
-     *       Note also that, apparently, while 'ISO/IEC 8859-1' has no characters defined for bytes 128 to 159,
-     *       IANA ISO-8859-1 does have well-defined 'C1' control codes for those - wikipedia's page on latin-1 says:
-     *       "ISO-8859-1 is the IANA preferred name for this standard when supplemented with the C0 and C1 control codes
-     *       from ISO/IEC 6429." Check what mbstring/iconv do by default with those?
-     */
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     protected function buildConversionTable($tableName)
     {
         switch ($tableName) {
@@ -80,7 +80,7 @@ class Charset
                     $this->xml_iso88591_Entities["out"][] = "&#{$i};";
                 }
 
-                /// @todo to be 'print safe', should we encode as well character 127 (DEL) ?
+                
 
                 for ($i = 160; $i < 256; $i++) {
                     $this->xml_iso88591_Entities["in"][] = chr($i);
@@ -88,64 +88,64 @@ class Charset
                 }
                 break;
 
-            /*case 'xml_cp1252_Entities':
-                if (count($this->xml_cp1252_Entities['in'])) {
-                    return;
-                }
-                for ($i = 128; $i < 160; $i++)
-                {
-                    $this->xml_cp1252_Entities['in'][] = chr($i);
-                }
-                $this->xml_cp1252_Entities['out'] = array(
-                    '&#x20AC;', '?',        '&#x201A;', '&#x0192;',
-                    '&#x201E;', '&#x2026;', '&#x2020;', '&#x2021;',
-                    '&#x02C6;', '&#x2030;', '&#x0160;', '&#x2039;',
-                    '&#x0152;', '?',        '&#x017D;', '?',
-                    '?',        '&#x2018;', '&#x2019;', '&#x201C;',
-                    '&#x201D;', '&#x2022;', '&#x2013;', '&#x2014;',
-                    '&#x02DC;', '&#x2122;', '&#x0161;', '&#x203A;',
-                    '&#x0153;', '?',        '&#x017E;', '&#x0178;'
-                );
-                $this->buildConversionTable('xml_iso88591_Entities');
-                break;*/
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             default:
                 throw new ValueErrorException('Unsupported table: ' . $tableName);
         }
     }
 
-    /**
-     * Convert a string to the correct XML representation in a target charset.
-     * This involves:
-     * - character transformation for all characters which have a different representation in source and dest charsets
-     * - using 'charset entity' representation for all characters which are outside the target charset
-     *
-     * To help correct communication of non-ascii chars inside strings, regardless of the charset used when sending
-     * requests, parsing them, sending responses and parsing responses, an option is to convert all non-ascii chars
-     * present in the message into their equivalent 'charset entity'. Charset entities enumerated this way are
-     * independent of the charset encoding used to transmit them, and all XML parsers are bound to understand them.
-     *
-     * Note that when not sending a charset encoding mime type along with http headers, we are bound by RFC 3023 to emit
-     * strict us-ascii for 'text/xml' payloads (but we should review RFC 7303, which seems to have changed the rules...)
-     *
-     * @param string $data
-     * @param string $srcEncoding
-     * @param string $destEncoding
-     * @return string
-     *
-     * @todo do a bit of basic benchmarking: strtr vs. str_replace, str_replace vs htmlspecialchars, hand-coded conversion
-     *       vs mbstring when that is enabled
-     * @todo make use of iconv when it is available and mbstring is not
-     * @todo support aliases for charset names, eg ASCII, LATIN1, ISO-88591 (see f.e. polyfill-iconv for a list),
-     *       but then take those into account as well in other methods, ie. isValidCharset)
-     * @todo when converting to ASCII, allow to choose whether to escape the range 0-31,127 (non-print chars) or not
-     * @todo allow picking different strategies to deal w. invalid chars? eg. source in latin-1 and chars 128-159
-     * @todo add support for escaping using CDATA sections? (add cdata start and end tokens, replace only ']]>' with ']]]]><![CDATA[>')
-     */
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function encodeEntities($data, $srcEncoding = '', $destEncoding = '')
     {
         if ($srcEncoding == '') {
-            // lame, but we know no better...
+            
             $srcEncoding = PhpXmlRpc::$xmlrpc_internalencoding;
         }
 
@@ -153,9 +153,9 @@ class Charset
             $destEncoding = 'US-ASCII';
         }
 
-        // in case there is transcoding going on, let's upscale to UTF8
-        /// @todo we should do this as well when $srcEncoding == $destEncoding and the encoding is not supported by
-        ///       htmlspecialchars
+        
+        
+        
         if (!in_array($srcEncoding, array('UTF-8', 'ISO-8859-1', 'US-ASCII')) && $srcEncoding != $destEncoding &&
             function_exists('mb_convert_encoding')) {
             $data = mb_convert_encoding($data, 'UTF-8', str_replace('US-ASCII', 'ASCII', $srcEncoding));
@@ -164,28 +164,28 @@ class Charset
 
         $conversion = strtoupper($srcEncoding . '_' . $destEncoding);
 
-        // list ordered with (expected) most common scenarios first
+        
         switch ($conversion) {
             case 'UTF-8_UTF-8':
             case 'ISO-8859-1_ISO-8859-1':
             case 'US-ASCII_UTF-8':
             case 'US-ASCII_US-ASCII':
             case 'US-ASCII_ISO-8859-1':
-            //case 'CP1252_CP1252':
+            
                 $escapedData = str_replace(array('&', '"', "'", '<', '>'), array('&amp;', '&quot;', '&apos;', '&lt;', '&gt;'), $data);
                 break;
 
             case 'UTF-8_US-ASCII':
             case 'UTF-8_ISO-8859-1':
-                // NB: this will choke on invalid UTF-8, going most likely beyond EOF
+                
                 $escapedData = '';
-                // be kind to users creating string xml-rpc values out of different php types
+                
                 $data = (string)$data;
                 $ns = strlen($data);
                 for ($nn = 0; $nn < $ns; $nn++) {
                     $ch = $data[$nn];
                     $ii = ord($ch);
-                    // 7 bits in 1 byte: 0bbbbbbb (127)
+                    
                     if ($ii < 32) {
                         if ($conversion == 'UTF-8_US-ASCII') {
                             $escapedData .= sprintf('&#%d;', $ii);
@@ -194,8 +194,8 @@ class Charset
                         }
                     }
                     else if ($ii < 128) {
-                        /// @todo shall we replace this with a (supposedly) faster str_replace?
-                        /// @todo to be 'print safe', should we encode as well character 127 (DEL) ?
+                        
+                        
                         switch ($ii) {
                             case 34:
                                 $escapedData .= '&quot;';
@@ -214,15 +214,15 @@ class Charset
                                 break;
                             default:
                                 $escapedData .= $ch;
-                        } // switch
-                    } // 11 bits in 2 bytes: 110bbbbb 10bbbbbb (2047)
+                        } 
+                    } 
                     elseif ($ii >> 5 == 6) {
                         $b1 = ($ii & 31);
                         $b2 = (ord($data[$nn + 1]) & 63);
                         $ii = ($b1 * 64) + $b2;
                         $escapedData .= sprintf('&#%d;', $ii);
                         $nn += 1;
-                    } // 16 bits in 3 bytes: 1110bbbb 10bbbbbb 10bbbbbb
+                    } 
                     elseif ($ii >> 4 == 14) {
                         $b1 = ($ii & 15);
                         $b2 = (ord($data[$nn + 1]) & 63);
@@ -230,7 +230,7 @@ class Charset
                         $ii = ((($b1 * 64) + $b2) * 64) + $b3;
                         $escapedData .= sprintf('&#%d;', $ii);
                         $nn += 2;
-                    } // 21 bits in 4 bytes: 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb
+                    } 
                     elseif ($ii >> 3 == 30) {
                         $b1 = ($ii & 7);
                         $b2 = (ord($data[$nn + 1]) & 63);
@@ -242,7 +242,7 @@ class Charset
                     }
                 }
 
-                // when converting to latin-1, do not be so eager with using entities for characters 160-255
+                
                 if ($conversion == 'UTF-8_ISO-8859-1') {
                     $this->buildConversionTable('xml_iso88591_Entities');
                     $escapedData = str_replace(array_slice($this->xml_iso88591_Entities['out'], 32), array_slice($this->xml_iso88591_Entities['in'], 32), $escapedData);
@@ -251,7 +251,7 @@ class Charset
 
             case 'ISO-8859-1_UTF-8':
                 $escapedData = str_replace(array('&', '"', "'", '<', '>'), array('&amp;', '&quot;', '&apos;', '&lt;', '&gt;'), $data);
-                /// @todo if on php >= 8.2, prefer using mbstring or iconv. Also: suppress the warning!
+                
                 if (function_exists('mb_convert_encoding')) {
                         $escapedData = mb_convert_encoding($escapedData, 'UTF-8', 'ISO-8859-1');
                 } else {
@@ -265,39 +265,39 @@ class Charset
                 $escapedData = str_replace($this->xml_iso88591_Entities['in'], $this->xml_iso88591_Entities['out'], $escapedData);
                 break;
 
-            /*
-            case 'CP1252_US-ASCII':
-                $this->buildConversionTable('xml_cp1252_Entities');
-                $escapedData = str_replace(array('&', '"', "'", '<', '>'), array('&amp;', '&quot;', '&apos;', '&lt;', '&gt;'), $data);
-                $escapedData = str_replace($this->xml_iso88591_Entities']['in'], $this->xml_iso88591_Entities['out'], $escapedData);
-                $escapedData = str_replace($this->xml_cp1252_Entities['in'], $this->xml_cp1252_Entities['out'], $escapedData);
-                break;
-            case 'CP1252_UTF-8':
-                $this->buildConversionTable('xml_cp1252_Entities');
-                $escapedData = str_replace(array('&', '"', "'", '<', '>'), array('&amp;', '&quot;', '&apos;', '&lt;', '&gt;'), $data);
-                /// @todo we could use real UTF8 chars here instead of xml entities... (note that utf_8 encode all alone will NOT convert them)
-                $escapedData = str_replace($this->xml_cp1252_Entities['in'], $this->xml_cp1252_Entities['out'], $escapedData);
-                $escapedData = utf8_encode($escapedData);
-                break;
-            case 'CP1252_ISO-8859-1':
-                $this->buildConversionTable('xml_cp1252_Entities');
-                $escapedData = str_replace(array('&', '"', "'", '<', '>'), array('&amp;', '&quot;', '&apos;', '&lt;', '&gt;'), $data);
-                // we might as well replace all funky chars with a '?' here, but we are kind and leave it to the receiving application layer to decide what to do with these weird entities...
-                $escapedData = str_replace($this->xml_cp1252_Entities['in'], $this->xml_cp1252_Entities['out'], $escapedData);
-                break;
-            */
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             default:
                 if (function_exists('mb_convert_encoding')) {
-                    // If reaching where, there are only 2 cases possible: UTF8->XXX or XXX->XXX
-                    // If src is UTF8, we run htmlspecialchars before converting to the target charset, as
-                    // htmlspecialchars has limited charset support, but it groks utf8
+                    
+                    
+                    
                     if ($srcEncoding === 'UTF-8') {
                         $data = htmlspecialchars($data,  defined('ENT_XML1') ? ENT_XML1 | ENT_QUOTES : ENT_QUOTES, 'UTF-8');
                     }
                     if ($srcEncoding !== $destEncoding) {
                         try {
-                            // php 7.4 and lower: a warning is generated. php 8.0 and up: an Error is thrown. So much for BC...
+                            
                             $data = @mb_convert_encoding($data, str_replace('US-ASCII', 'ASCII', $destEncoding), str_replace('US-ASCII', 'ASCII', $srcEncoding));
                         } catch (\ValueError $e) {
                             $data = false;
@@ -322,14 +322,14 @@ class Charset
         return $escapedData;
     }
 
-    /**
-     * @return string[]
-     */
+    
+
+
     public function knownCharsets()
     {
         $knownCharsets = array('UTF-8', 'ISO-8859-1', 'US-ASCII');
-        // Add all charsets which mbstring can handle, but remove junk not found in IANA registry at
-        // http://www.iana.org/assignments/character-sets/character-sets.xhtml
+        
+        
         if (function_exists('mb_list_encodings')) {
             $knownCharsets = array_unique(array_merge($knownCharsets, array_diff(mb_list_encodings(), array(
                 'pass', 'auto', 'wchar', 'BASE64', 'UUENCODE', 'ASCII', 'HTML-ENTITIES', 'Quoted-Printable',
@@ -339,17 +339,17 @@ class Charset
         return $knownCharsets;
     }
 
-    // *** BC layer ***
+    
 
-    /**
-     * Checks if a given charset encoding is present in a list of encodings or if it is a valid subset of any encoding
-     * in the list.
-     * @deprecated kept around for BC, as it is not in use by the lib
-     *
-     * @param string $encoding charset to be tested
-     * @param string|array $validList comma separated list of valid charsets (or array of charsets)
-     * @return bool
-     */
+    
+
+
+
+
+
+
+
+
     public function isValidCharset($encoding, $validList)
     {
         $this->logDeprecation('Method ' . __METHOD__ . ' is deprecated');
@@ -372,14 +372,14 @@ class Charset
         }
     }
 
-    /**
-     * Used only for backwards compatibility (the .inc shims).
-     * @deprecated
-     *
-     * @param string $charset
-     * @return array
-     * @throws ValueErrorException for unknown/unsupported charsets
-     */
+    
+
+
+
+
+
+
+
     public function getEntities($charset)
     {
         $this->logDeprecation('Method ' . __METHOD__ . ' is deprecated');

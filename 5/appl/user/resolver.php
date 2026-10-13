@@ -2,9 +2,9 @@
 
 class resolver
 {
-  // *******************************************************************
-  // ************* V A R S  &  C O N S T R U C T ***********************
-  // *******************************************************************
+  
+  
+  
   private $CS;
   private $config;
 
@@ -14,7 +14,7 @@ class resolver
     $this->config = $Config;
   }
 
-  //Neu, pr fen ob es mind. eine ID gibt	
+  
   private function hasResolverId(array $data): bool
   {
     if (!empty($data['doi'])   && trim($data['doi'])   !== '') return true;
@@ -28,15 +28,15 @@ class resolver
   private function getJOP_Full($link, $libparam)
   {     
     $joponlyfulltext = true;
-    //Set the default stream context
-    //for the Error: SSL routines:ssl3_get_server_certificate:certificate verify failed:
-    //ALT
-    //stream_context_set_default(['ssl'=> ['verify_peer' => false, 'verify_peer_name' => false]]);
-    //Get the xml answer
-    // NEU:
+    
+    
+    
+    
+    
+    
      stream_context_set_default([
     'ssl'  => ['verify_peer' => false, 'verify_peer_name' => false],
-    'http' => ['timeout' => 3]  // ALI 28.04.2026: Timeout erg nzt, belegt durch Logs ~2 Sek
+    'http' => ['timeout' => 3]  
     ]);
     try
     {
@@ -56,7 +56,7 @@ class resolver
             if(  $ezb_xml && isset($ezb_xml->Full->ElectronicData->References->Reference[0]) && 
                  $ref = $ezb_xml->Full->ElectronicData->References->Reference[0] )
             {
-                //EZB-website to the title with other possible links:
+                
                 $refUrl   = isset($ref->URL) ? $ref->URL : "";
                 $refLabel = isset($ref->Label) ? $ref->Label : "";
             }
@@ -71,19 +71,19 @@ class resolver
                     $resultStatus       = !empty((string)$aResult['state']) ? (string)$aResult['state'] : "0";
                     $resultAccessLevel  = !empty((string)$aResult->AccessLevel) ? (string)$aResult->AccessLevel : "";
                     $resultAccessURL    = !empty((string)$aResult->AccessURL) ? (string)$aResult->AccessURL : "";
-                    //Get the results and select AccessURL. 
-                    //State "4" = "not on-licence",  "5" except period.
-                    //AccessLevel "homepage" = no a good accurate result.
+                    
+                    
+                    
                                         
                     if( !empty($resultAccessURL) && ($resultStatus == "0" || $resultStatus == "1" || $resultStatus == "2") )
                     {
                         if( $resultAccessLevel != "homepage" )
-                        {   //Neu DFG-gef rdet wurde falsch dargstellt
+                        {   
                             $resultAdditionalDecoded = html_entity_decode($resultAdditional, ENT_QUOTES, 'UTF-8');
                             if( strpos($resultAdditionalDecoded, "DFG-gef rdert") !== false 
                             || strpos($resultAdditional, "DFG-gef") !== false )
                             {
-                                return $resultAccessURL; //Link to the full text
+                                return $resultAccessURL; 
                             }
                             else
                             {
@@ -97,13 +97,13 @@ class resolver
             }
             elseif(  $refUrl != "" && $refLabel == "EZB-Opac" )
             {
-                //EZB-website to the title with other possible links:
+                
                 return $refUrl . "&" . $libparam;
             }
             else return "";
         }
         else return "";
-        //return array_values((array)$returnValue)[0];        
+        
     }
     return "";
   }  
@@ -126,29 +126,29 @@ class resolver
             case "ovid":
                 $return[$resolver] = $resolverLink;
                 break;
-								// ganz oben in der Klasse (optional, einmalig):
-								// stream_context_set_default(['ssl'=>['verify_peer'=>false,'verify_peer_name'=>false]]);
+								
+								
 
-								// ... im redi-Case:
+								
 	    case "redi":
     	    $resolverLink = str_replace("&rft.","&",$resolverLink);
     	    $resolverLink = str_replace(" ","%20",$resolverLink);
-	    //$this->CS->debug("ALI_REDI_REQUEST", $resolverLink);
+	    
 
-	   // 1) Context vorbereiten: SSL off, GET, UA
+	   
     	   $ctx = stream_context_create([
            'ssl'  => ['verify_peer' => false, 'verify_peer_name' => false],
            'http' => [
-	   'method'        => 'GET',                 // WICHTIG: statt HEAD
+	   'method'        => 'GET',                 
 	   'timeout'       => 3,
-           'ignore_errors' => true,                  // $http_response_header bef llen
+           'ignore_errors' => true,                  
 	   'header'        => "User-Agent: Mozilla/5.0\r\n",
         ],
     ]);
 
-    // 2) get_headers mit Context
     
-    // ALEX 14.11.2025
+    
+    
     try
     {
 	    $headers = get_headers($resolverLink, 1, $ctx);
@@ -161,23 +161,23 @@ class resolver
       
     if ($headers === false) {
         if ( MODE != "production" ) $this->CS->debug("PROBLEM_RESOLVER_HEADER_" . $this->CS->client. "_" . strtoupper($resolver), $this->CS->posted["id"] . ": ". $resolverLink);
-        break; // sauber raus
-        // 3) Ursache loggen
-        // Notfalls einmal kurz GET  anfassen , um $http_response_header zu f llen:
+        break; 
         
-        // ALEX 14.11.2025
-		   /* try
-    		{
-			    @file_get_contents($resolverLink, false, $ctx);
-		    }
-		    catch (Exception $e)
-		    {
-        	if ( MODE != "production" ) $this->CS->debug("PROBLEM_RESOLVER_GET_" . $this->CS->client . "_" . strtoupper($resolver), $this->CS->posted["id"] . ": ". $resolverLink);
-    		}
-        break; // sauber raus*/
+        
+        
+        
+		   
+
+
+
+
+
+
+
+
     }
 
-    // 4) Redirects auswerten
+    
     if (isset($headers[0]) && (strpos($headers[0], "301") !== false || strpos($headers[0], "302") !== false)) {
         $locations = isset($headers["Location"])
             ? (is_array($headers["Location"]) ? $headers["Location"] : [$headers["Location"]])
@@ -265,27 +265,27 @@ class resolver
     $metadataOU  = "";
     $libGenre951 = empty($data["genre"]) ? "" : $data["genre"];
     
-    //Alt
-    /*if( !empty($data["format"]) && $resolver != "zotero" )
-    {
-        //JOP-genre muss klein geschrieben werden!!!
-        $libGenre   = ($libGenre951 == "MV" || $libGenre951 == "ST")
-                      ? (($libGenre951 == "MV") ? "Bookitem" : "Book") 
-                      : ($libGenre951 == "AR" ? "Article" : ($libGenre951 == "JT" ? "Journal" : ucfirst($data["format"]) ));
-        $metadataOU = "&rft.genre=" . ($resolver == "jop" ? ((strpos(strtolower($data["format"]),"article") !== false) ?
-                      "article" : "journal") : $libGenre);
-    }*/
-    //Neu
+    
+    
+
+
+
+
+
+
+
+
+    
       if( !empty($data["format"]) && $resolver != "zotero" )
       {
-        //JOP-genre muss klein geschrieben werden!!!
+        
         $libGenre = ($libGenre951 == "MV" || $libGenre951 == "ST")
                 ? (($libGenre951 == "MV") ? "Bookitem" : "Book") 
                 : ($libGenre951 == "AR" ? "Article" : ($libGenre951 == "JT" ? "Journal" : ucfirst($data["format"])));
 
         if ( $resolver == "jop" ) {
-          // JOP unterst tzt nur journal oder article
-          // article nur wenn ISSN/ZDBID vorhanden, sonst journal (ALI 30.04.2026)
+          
+          
           $hasJournalId = !empty($data["issn"]) || !empty($data["zdbid"]);
           $isArticle    = strpos(strtolower($data["format"]), "article") !== false;
           $metadataOU   = "&rft.genre=" . (($isArticle && $hasJournalId) ? "article" : "journal");
@@ -313,28 +313,28 @@ class resolver
     $isbn = rtrim(trim($isbn), ",;");
     $metadataOU .= "&rft.isbn=" . $isbn;
     }    
-    //Alt
-    /*if( !empty($data["date"]) && $data["date"] != " " ) 
-        { $metadataOU .= "&rft." . "date="   . str_replace(array("[","]"),array("",""),$data["date"]);   }*/
-    //Neu
+    
+    
+
+    
     if( !empty($data["date"]) && $data["date"] != " " ) 
     { 
       $date = str_replace(array("[","]"), array("",""), $data["date"]);
       $date = trim($date, "- ");
     
       if ( preg_match('/^(\d{4}-\d{2}-\d{2})/', $date, $m) ) {
-        $date = $m[1]; // YYYY-MM-DD
+        $date = $m[1]; 
       } elseif ( preg_match('/^(\d{4}-\d{2})/', $date, $m) ) {
-        $date = $m[1]; // YYYY-MM
+        $date = $m[1]; 
       } elseif ( preg_match('/(\d{4})/', $date, $m) ) {
-        $date = $m[1]; // YYYY
+        $date = $m[1]; 
       } else {
         $date = "";
     }
     
     if ( !empty($date) ) $metadataOU .= "&rft.date=" . $date;
     }
-    // if( !empty($data["part"])   && $data["part"]   != " " ) { $metadataOU .= "&rft." . "part="   . $data["part"];   }
+    
     if( !empty($data["volume"]) && $data["volume"] != " " ) { $metadataOU .= "&rft." . "volume=" . $data["volume"]; }
     if( !empty($data["issue"])  && $data["issue"]  != " " ) { $metadataOU .= "&rft." . "issue="  . $data["issue"];  }
     if( !empty($data["pages"])  && $data["pages"]  != " " )
@@ -405,7 +405,7 @@ class resolver
     if(  !empty($data["issn"]) || !empty($data["isbn"]) || !empty($data["zdbid"]) )            
     {
         $zdbid            = ((empty($data["issn"]) && empty($data["isbn"]) && !empty($data["zdbid"])) ? $data["zdbid"] : "");
-        // ALI 29.05.2026 - nur erstes Kuerzel nehmen (vor Komma) fuer JOP
+        
         $ezbbibidRaw      = $this->config["ezbbibid"] ?? "";
         $ezbbibid         = !empty($ezbbibidRaw) ? trim(explode(",", $ezbbibidRaw)[0]) : null;    
         $isil             = empty($this->config["isil"]) ? null : $this->config["isil"] ;                  
@@ -425,16 +425,16 @@ class resolver
 
   private function getSFX_Full($link)
   {
-    //Build the url for the sfx answer
+    
     $sfx_xml_url = $link . "&sfx.response_type=simplexml";
 
-    //Set the default stream context
-    //for the Error: SSL routines:ssl3_get_server_certificate:certificate verify failed:
+    
+    
     stream_context_set_default([
     'ssl'  => ['verify_peer' => false, 'verify_peer_name' => false],
     'http' => ['timeout' => 3]
      ]);
-    //Get the xml answer
+    
 
     try
     {
@@ -446,10 +446,10 @@ class resolver
     }
     if ( !empty($sfx_xml) ) 
     {
-        //Go on xml tag 'targets'
+        
         if( !empty($sfx_xml_targets = $sfx_xml->targets)) 
         {
-            //Loop through results and select target_url for service_type 'getFullTxt'
+            
             foreach ($sfx_xml_targets->target as $target)
             {
                 if( $target->target_name == 'MESSAGE_NO_FULLTXT')
@@ -465,7 +465,7 @@ class resolver
                 }
                 
             }
-            //Neu:
+            
             if ( MODE != "production" ) $this->CS->debug("ALI_SFX_NORESULT_" . $this->CS->client, $link);
             return "";
         }
@@ -474,9 +474,9 @@ class resolver
     else return "";
   }
 
-  // *******************************************************************
-  // ************* P U B L I C *****************************************
-  // *******************************************************************
+  
+  
+  
   public function exportlink($data, $format)
   {
     $openurlEntry    = "";    $openurlBase     = "";
@@ -522,7 +522,7 @@ class resolver
     { 
         $link = null;
     }
-    //Link/URL zurueckliefern:
+    
     return $link;
   }
 
@@ -534,12 +534,12 @@ class resolver
 
     if (!$hasId) 
     {
-      //$this->CS->debug("ALI_data", $data);
+      
       return $linkarray;
     }
 
-    //Set the variable prio:
-    // ALI 29.05.2026 - fulltextprios entfernt, immer alle aktiven Resolver
+    
+    
     $fulltextPriosArray = ["multi"];
     foreach( $this->config as $confItemKey => $confItemValue )
     {
@@ -552,7 +552,7 @@ class resolver
     {
         $fulltextPriosArray[] = "jop";
     }
-    //Build the return variable:
+    
     for( $i=(strpos("multi,single",$fulltextPriosArray[0]) !== false ? 1 : 0);$i<count($fulltextPriosArray);$i++ )
     {
         $resolver   = $fulltextPriosArray[$i];
@@ -562,13 +562,13 @@ class resolver
             {
                 if( ($Link = $this->get_jop_link($data)) != "" )
                 {
-                    //Chr(32),%20 space    chr(39), %27 Single quote    chr(34), %22 Double Quotes    Chr(38), %26 &
+                    
                     $linkarray["jop"] = str_replace(array(chr(39),chr(34)), array("%27","%22"), $Link);
                 }
             }
             else
             {
-                // ALI 02.06.2026 - {ezbid} in redibase durch ezbbibid ersetzen
+                
                 $resolverBaseUrl = $this->config[($resolver . "base")];
                 if ( strpos($resolver, "redi") !== false && strpos($resolverBaseUrl, "{ezbbibid}") !== false )
                 {
@@ -585,8 +585,8 @@ class resolver
             break;
         }
     }
-    //$this->CS->debug("Ali", $data);
-    //$this->CS->debug("Ali", $linkarray);
+    
+    
     return $linkarray;
     
   }

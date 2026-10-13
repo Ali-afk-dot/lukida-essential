@@ -1,73 +1,73 @@
 <?php
 
-/*
-  Gemeinsamer Vertrag aller BMS-Treiber (14.09.2026)
-  ===================================================
 
-  user.php spricht ein Bibliotheksmanagementsystem NUR ueber die zehn Methoden
-  unten an und weiss nicht, welches System dahintersteht (setBMS() waehlt den
-  Treiber nach adminbms.type). Deshalb muss jeder Treiber exakt dieselben
-  Formate liefern. Massgeblich ist das, was paia seit jeher liefert - daran
-  haengen user.php, item.php und die Oberflaechen.
 
-  Konfiguration
-  -------------
-  - adminbms (je BMS): type, isil, iln, apitest/apiprod, options (JSON).
-    Treiberspezifisches steht in options, z.B. bei folio tenant, systemuser,
-    systempass. Hier gilt: $this->option("...").
-  - adminconfigs, Kategorie "bms" ($this->CS->configs["bms"]): fachliche
-    Schalter fuer alle Treiber (answer*, maxrenewals, changepassword, ...).
 
-  Kennungen
-  ---------
-  - $Login: was checkUser() als "login" geliefert hat (paia: Patron-ID,
-    folio: Nutzer-UUID).
-  - $Token: was checkUser() als "user.token" geliefert hat. JEDE Methode mit
-    $Token muss ihn gegen das BMS pruefen - user.php prueft nur, ob er da ist.
-  - $ID eines Exemplars/Kontoeintrags: undurchsichtig, der Treiber versteht ihn.
 
-  Rueckgabeformate
-  ----------------
-  checkUser($User, $Pass)
-    Erfolg: { stat:"success", mess:[..], login,
-              user:{ token, login, name, email, address, expires, status,
-                     type, notes:[{label}], blocked:bool, accountstatus },
-              items:[ { item, about, label, storage, storageid, starttime,
-                        endtime, queue, renewals, reminder, canrenew,
-                        cancancel, status:1..5 } ]      (nur mit display.items)
-              fees:{ amount:"0.00 EUR", code, items:[{feetype, about,
-                     amount, date}] } }                 (nur mit display.fees)
-    Fehler: { stat:"error", mess:[..], more:[..] }
 
-  ReadUser($Login, $Token)
-    Erfolg: { username, name, email, address, status, type, expires, note }
-    Token ungueltig oder Fehler: array()
 
-  getPPN($PPN, $Format) / getEPN($EPN, $Format)
-    [ <ExpID> => { epn, count, id, about, bandlist, label?, storage?,
-                   storageid?, storagelink?, chronology?, department?,
-                   departmentid?,
-                   <dienst>:bool, <dienst>items:[{ limitation:[], expected,
-                   queue, title, delay, href, action }] } ]
-    <dienst> = loan, presentation, interloan, openaccess, remote.
-    Fehler: array()
 
-  Request($Login, $ID, $Token, $Cond, $Type)  ($Type: "order" | "reserve")
-  Renew($Login, $ID, $Token)
-    Erfolg: { status:0, stat:"success", mess:[..], more:[..] }
-    Fehler: { status:-1, stat:"error",   mess:[..], more:[..] }
 
-  Cancel($Login, $ID, $Token)
-  ChangeMail($Login, $Token, $New)
-  ResetPW($Login)
-    Erfolg: { status:0, ... }
-    Fehler: { status:-2, code?, more }
 
-  ChangePW($Login, $Token, $Old, $New)
-    Erfolg: Ergebnis von checkUser() mit dem neuen Passwort, dazu status:1
-            (die Oberflaeche uebernimmt daraus den Kontostand)
-    Fehler: { status:-2, more }
-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 abstract class bms
 {
@@ -88,9 +88,9 @@ abstract class bms
     $this->link   = ( isset($this->config[$Api]) && trim($this->config[$Api]) ) ? rtrim(trim($this->config[$Api]), "/") : "";
   }
 
-  // *******************************************************************
-  // ************* V E R T R A G ***************************************
-  // *******************************************************************
+  
+  
+  
   abstract public function checkUser($User, $Pass);
   abstract public function ReadUser($Login, $Token);
   abstract public function getPPN($PPN, $Format);
@@ -102,16 +102,16 @@ abstract class bms
   abstract public function ChangePW($Login, $Token, $Old, $New);
   abstract public function ResetPW($Login);
 
-  // *******************************************************************
-  // ************* H T T P *********************************************
-  // *******************************************************************
+  
+  
+  
 
-  // Eine HTTP-Schicht fuer alle Treiber. Rueckgabe:
-  //   ok      curl hat eine Antwort bekommen (unabhaengig vom HTTP-Status)
-  //   http    HTTP-Status
-  //   headers Antwort-Kopfzeilen als Text
-  //   body    Antwortrumpf
-  //   json    Rumpf als Array, falls JSON - sonst null
+  
+  
+  
+  
+  
+  
   protected function http($Method, $Url, $Body = null, $Headers = array())
   {
     static $ch = null;
@@ -132,9 +132,9 @@ abstract class bms
       CURLOPT_CONNECTTIMEOUT => 10,
       CURLOPT_TIMEOUT        => 60,
       CURLOPT_ENCODING       => "",
-      // Bisheriges Verhalten beider Treiber: keine Zertifikatspruefung (die
-      // Testsysteme haben teils keine gueltigen Zertifikate). Je BMS
-      // einschaltbar ueber options.sslverify = "y".
+      
+      
+      
       CURLOPT_SSL_VERIFYPEER => $this->option("sslverify") == "y",
       CURLOPT_SSL_VERIFYHOST => $this->option("sslverify") == "y" ? 2 : 0,
     );
@@ -163,8 +163,8 @@ abstract class bms
     return $Result;
   }
 
-  // Zugangsdaten und Tokens NIE ins Debug-Log (14.09.2026). Vorher schrieb
-  // BMI bei jeder Anmeldung das Passwort im Klartext mit.
+  
+  
   protected function mask($Data)
   {
     if ( !is_array($Data) )  return $Data;
@@ -181,9 +181,9 @@ abstract class bms
     return array_map(fn($H) => preg_replace('/^(Authorization|Cookie):.*$/i', '$1: ***', $H), $Headers);
   }
 
-  // *******************************************************************
-  // ************* H E L F E R *****************************************
-  // *******************************************************************
+  
+  
+  
   protected function option($Key, $Default = "")
   {
     return ( isset($this->config["options"][$Key]) && $this->config["options"][$Key] !== "" ) ? $this->config["options"][$Key] : $Default;
@@ -210,8 +210,8 @@ abstract class bms
                  "more"   => (array) $More);
   }
 
-  // Zusatzzeilen einer Erfolgsmeldung nach den Schaltern configs.bms.answer*.
-  // $Kind: "" (Bestellung), "reserve" oder "renew".
+  
+  
   protected function answerLines($Kind, $EndTime = "", $Storage = "")
   {
     $Lines = array();

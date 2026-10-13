@@ -1,32 +1,32 @@
 <?php
 
-/*
-  FOLIO-Treiber. Vertrag und Rueckgabeformate: siehe bms.php.
 
-  - Folio hat ein eigenes Endnutzer-Management. Endnutzer haben aber zu wenig
-    Rechte, um ueber die API zu bestellen, zu verlaengern usw.
-  - Lukida arbeitet deshalb mit einem Systemkonto (adminbms.options: tenant,
-    systemuser, systempass). Sein Konto darf nie ablaufen, sonst steht die
-    Schnittstelle. Der Token des Systemkontos wird zwischengespeichert und vor
-    Ablauf erneuert.
-  - Nutzende melden sich mit ihren eigenen Zugangsdaten an. Deren Token geht
-    als "user.token" an die Oberflaeche und kommt bei jeder Aktion zurueck.
-    Er wird JEDES MAL gegen /bl-users/_self geprueft (14.09.2026) - erst danach
-    handelt Lukida mit dem Systemtoken, und nur fuer genau diesen Nutzer.
-    Vorher wurde der Token nie ausgewertet: wer eine Nutzer-UUID kannte, konnte
-    mit einem beliebigen Token fuer dieses Konto bestellen oder stornieren.
-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class folio extends bms
 {
-  // Stornogrund, falls options.cancelreasonid nicht gesetzt ist
+  
   private const CANCELREASON = "75187e8d-e25a-47a7-89ad-23ba612338de";
 
-  // Kontostand-Anfragen, die als offen gelten
+  
   private const OPENREQUESTS = array("Open - Not yet filled", "Open - In transit", "Open - Awaiting pickup");
 
-  private static $systemtokens = array();   // je Server/Tenant/Konto, fuer den ganzen PHP-Lauf
-  private static $verified     = array();   // gepruefte Nutzertokens -> _self
+  private static $systemtokens = array();   
+  private static $verified     = array();   
 
   private $lookups = array();
   private $tenant;
@@ -37,7 +37,7 @@ class folio extends bms
   {
     parent::__construct($BMSID, $CS);
 
-    // Frueher fest im Code ("ubweimar_test", "011124"/"011124")
+    
     $this->tenant     = $this->option("tenant");
     $this->systemuser = $this->option("systemuser");
     $this->systempass = $this->option("systempass");
@@ -45,9 +45,9 @@ class folio extends bms
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
   }
 
-  // *******************************************************************
-  // ************* V E R B I N D U N G *********************************
-  // *******************************************************************
+  
+  
+  
 
   private function configured()
   {
@@ -57,7 +57,7 @@ class folio extends bms
     return false;
   }
 
-  // Anmeldung eines Kontos. Rueckgabe: {token, expires} oder {error: http|0}
+  
   private function login($User, $Pass)
   {
     $Response = $this->http("POST", $this->link . "/authn/login-with-expiry",
@@ -78,8 +78,8 @@ class folio extends bms
 
     if ( !$Renew && isset(self::$systemtokens[$Key]) && self::$systemtokens[$Key]["expires"] > time() + 60 )  return self::$systemtokens[$Key]["token"];
 
-    // Zwischenspeicher ueber PHP-Laeufe hinweg: vorher meldete sich das
-    // Systemkonto bei JEDEM "new folio" neu an - je Treffer einer Trefferliste.
+    
+    
     $File = $this->CS->prepareCachePath(array("settings"), "foliosystemtoken");
     if ( !$Renew && file_exists($File) )
     {
@@ -104,8 +104,8 @@ class folio extends bms
     return $Login["token"];
   }
 
-  // FOLIO-Aufruf. Ohne $UserToken mit dem Systemtoken; lehnt der Server den
-  // (z.B. vorzeitig) ab, wird er einmal erneuert.
+  
+  
   private function call($Method, $Path, $Data = null, $UserToken = null)
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -146,8 +146,8 @@ class folio extends bms
     return trim(substr(strip_tags($Response["body"]), 0, 200));
   }
 
-  // Nutzertoken gegen FOLIO pruefen und zu $Login passend? Rueckgabe: _self
-  // ({user, patronGroup, ...}) oder null.
+  
+  
   private function verifyUser($Login, $Token)
   {
     if ( !$Token || !$this->configured() )  return null;
@@ -161,15 +161,15 @@ class folio extends bms
     $Self = self::$verified[$Token];
     if ( $Self === null )  return null;
 
-    // $Login ist, was checkUser() als "login" geliefert hat (UUID); aeltere
-    // Sitzungen schicken den Benutzernamen oder Barcode
+    
+    
     $User = $Self["user"];
     if ( $Login !== "" && !in_array((string) $Login, array((string) $User["id"], (string) ($User["username"] ?? ""), (string) ($User["barcode"] ?? "")), true) )  return null;
 
     return $Self;
   }
 
-  // Stammdaten (Standorte, Theken, Ausleihtypen, Leihregeln), je Tag zwischengespeichert
+  
   private function lookup($Name)
   {
     if ( isset($this->lookups[$Name]) )  return $this->lookups[$Name];
@@ -194,17 +194,17 @@ class folio extends bms
     {
       if ( isset($Record["id"]) )  $Data[$Record["id"]] = $Record;
     }
-    // Nur Vollstaendiges zwischenspeichern - ein Fehler soll nicht einen Tag lang gelten
+    
     if ( count($Data) )  file_put_contents($File, json_encode($Data));
     return $this->lookups[$Name] = $Data;
   }
 
-  // *******************************************************************
-  // ************* K E N N U N G E N ***********************************
-  // *******************************************************************
+  
+  
+  
 
-  // Undurchsichtige ID fuer Oberflaeche und Rueckweg: alle FOLIO-Kennungen,
-  // die eine spaetere Aktion braucht, als Query-String.
+  
+  
   private const IDFIELDS = array("f1" => "id", "f2" => "instanceId", "f3" => "itemId", "f4" => "holdingsRecordId",
                                  "f5" => "pickupServicePointId", "f6" => "requestDate", "f7" => "requesterId",
                                  "f8" => "itemBarcode", "f9" => "userBarcode");
@@ -230,9 +230,9 @@ class folio extends bms
     return $IDs;
   }
 
-  // *******************************************************************
-  // ************* V E R F U E G B A R K E I T *************************
-  // *******************************************************************
+  
+  
+  
 
   private function callNumber($Components, $Separator = " ")
   {
@@ -248,15 +248,15 @@ class folio extends bms
     return $Extra + array("limitation" => array(), "expected" => "-", "queue" => 0, "title" => "-", "delay" => "-", "href" => "-", "action" => $Action);
   }
 
-  // Exemplarsaetze -> Vertragsformat (Status-Logik wie bisher, Stufen S1-S3)
+  
   private function parseItems($Records, $Format)
   {
     $Locations = $this->lookup("locations");
     $LoanTypes = $this->lookup("loantypes");
 
     $Items       = array();
-    $NeedIDs     = false;    // Bestellen/Vormerken moeglich -> Instanz-ID noetig
-    $QueueItems  = array();  // ausgeliehen o.ae. -> Warteschlange und Faelligkeit
+    $NeedIDs     = false;    
+    $QueueItems  = array();  
 
     foreach ( $Records as $Exp )
     {
@@ -289,9 +289,9 @@ class folio extends bms
         case "available":
         {
           $LoanType     = strtolower(substr($LoanTypes[$Exp["permanentLoanTypeId"] ?? ""]["name"] ?? "", 0, 3));
-          $Item["loan"] = in_array($LoanType, array("u -", "b -", "c -"));   // Ausleih- oder Praesenzbestand
+          $Item["loan"] = in_array($LoanType, array("u -", "b -", "c -"));   
 
-          // Magazin ueber Standort-Merkmal "Zugänglichkeit" = "geschlossen"
+          
           $Details = $Location["details"] ?? array();
           if ( is_array($Details) && ( $Details["Zugänglichkeit"] ?? "" ) == "geschlossen" )
           {
@@ -324,7 +324,7 @@ class folio extends bms
         }
         default:
         {
-          // on order, in process, missing, withdrawn, restricted, intellectual item, lost, unknown, ...
+          
           $Item["loan"]              = false;
           $Item["loanitems"]         = array($this->serviceEntry("-"));
           $Item["presentation"]      = false;
@@ -336,8 +336,8 @@ class folio extends bms
     }
     if ( !count($Items) )  return $Items;
 
-    // S2: Instanz-ID (fuer Bestellung/Vormerkung) - ueber den Bestandssatz,
-    // einmal je Titel
+    
+    
     if ( $NeedIDs )
     {
       $First    = reset($Records);
@@ -353,9 +353,9 @@ class folio extends bms
       }
     }
 
-    // S3: Faelligkeit und Warteschlange - EINE Abfrage fuer alle Exemplare
-    // (vorher je Exemplar, und nur das letzte bekam Werte; das Datum war fest
-    // "30.05.2026")
+    
+    
+    
     if ( count($QueueItems) )
     {
       $Due   = array();
@@ -384,16 +384,16 @@ class folio extends bms
     }
     unset($Item);
 
-    // Sort records by about (volume...) - wie paia
+    
     uasort($Items, function ($a, $b) { return $a['about'] <=> $b['about']; });
     return $Items;
   }
 
-  // *******************************************************************
-  // ************* K O N T O *******************************************
-  // *******************************************************************
+  
+  
+  
 
-  // Hinweise und Sperren aus manuellen/automatischen Sperren und Discovery-Notizen
+  
   private function readNotes($UUID)
   {
     $Notes  = array();
@@ -414,20 +414,20 @@ class folio extends bms
       }
     }
 
-    // Discovery notes
-    // Nur Typ "Discovery" beachten - die Schnittstelle laesst eine Abfrage auf
-    // type oder typeId offenbar nicht zu, es muss also nachtraeglich gefiltert
-    // werden. Ausgegeben wird das Feld "content", siehe
-    // https://info.gbv.de/spaces/DIFO/pages/1212022834/Endpunkte+FOLIO
+    
+    
+    
+    
+    
     foreach ( $this->getJson("/note-links/domain/users/type/user/id/" . rawurlencode($UUID) . "?limit=100000&status=assigned&order=desc&orderBy=updatedDate")["notes"] ?? array() as $MB )
     {
       if ( ( $MB["type"] ?? "" ) != "Discovery" || !trim($MB["content"] ?? "") )  continue;
 
-      // FOLIO liefert den Notiztext als HTML aus einem Editor. Die
-      // Kontoanzeige erwartet reinen Text, deshalb Auszeichnung entfernen -
-      // ueber htmlToPlainText(), damit <br> und Absatzenden zu Zeilenumbrue-
-      // chen werden statt die Woerter aneinanderzukleben, und damit
-      // Entitaeten wie &amp; oder &nbsp; aufgeloest sind (2026-08-14).
+      
+      
+      
+      
+      
       $Text = $this->CS->htmlToPlainText($MB["content"]);
       if ( trim($Text) )  $Notes[] = array("label" => $Text);
     }
@@ -441,10 +441,10 @@ class folio extends bms
     $Policies = $this->lookup("policys");
     $Items    = array();
 
-    // Ausleihen (Status 3)
+    
     $Loans = $this->getJson("/circulation/loans?limit=10000&query=" . $this->cql("userId==" . $UUID . ' and status.name=="Open" sortby dueDate/sort.descending'))["loans"] ?? array();
 
-    // Offene Vormerkungen auf den ausgeliehenen Exemplaren - eine Abfrage statt einer je Ausleihe
+    
     $Queue   = array();
     $ItemIDs = array_values(array_filter(array_column($Loans, "itemId")));
     if ( count($ItemIDs) )
@@ -485,7 +485,7 @@ class folio extends bms
       );
     }
 
-    // Bestellungen (2), Vormerkungen (1) und Abholbares (4)
+    
     foreach ( $this->getJson("/circulation/requests?limit=10000&query=" . $this->cql("requesterId==" . $UUID . " and status==" . $this->cqlList(self::OPENREQUESTS)))["requests"] ?? array() as $Req )
     {
       $Pickup = ( $Req["status"] ?? "" ) == "Open - Awaiting pickup";
@@ -498,7 +498,7 @@ class folio extends bms
         "storage"   => $Req["pickupServicePoint"]["discoveryDisplayName"] ?? "",
         "storageid" => $Req["item"]["location"]["name"] ?? "",
         "starttime" => $Req["requestDate"] ?? "",
-        // Abholbares: bis wann es im Abholregal liegt (vorher fest "2024-10-22")
+        
         "endtime"   => $Pickup ? ( $Req["holdShelfExpirationDate"] ?? "" ) : "",
         "queue"     => $Req["position"] ?? "",
         "renewals"  => 0,
@@ -527,13 +527,13 @@ class folio extends bms
         "feetype" => $Charge["reason"] ?? "",
         "about"   => $Charge["item"]["title"] ?? "",
         "amount"  => number_format((float) ( $Charge["chargeAmount"]["amount"] ?? 0 ), 2, ".", "") . " " . ( $Charge["chargeAmount"]["isoCurrencyCode"] ?? $Currency ),
-        "date"    => $Charge["accrualDate"] ?? "",   // Rohdatum, user.php formatiert
+        "date"    => $Charge["accrualDate"] ?? "",   
       );
     }
     return $Fees;
   }
 
-  // Stammdaten aus _self in das Vertragsformat
+  
   private function userData($Self)
   {
     $User     = $Self["user"];
@@ -550,7 +550,7 @@ class folio extends bms
                                                      $Address["addressLine2"] ?? "",
                                                      trim(( $Address["postalCode"] ?? "" ) . " " . ( $Address["city"] ?? "" )),
                                                      $Address["countryId"] ?? ""))),
-      // vorher ohne Ablaufdatum fest "2025-05-20"
+      
       "expires"  => isset($User["expirationDate"]) ? substr($User["expirationDate"], 0, 10) : "",
       "type"     => $Self["patronGroup"]["desc"] ?? ( $Self["patronGroup"]["group"] ?? "" ),
       "expired"  => ( isset($User["active"]) && !$User["active"] )
@@ -566,9 +566,9 @@ class folio extends bms
                  "more" => array($More));
   }
 
-  // *******************************************************************
-  // ************* P U B L I C *****************************************
-  // *******************************************************************
+  
+  
+  
   public function getPPN($PPN, $Format)
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -587,7 +587,7 @@ class folio extends bms
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
     if ( !$this->configured() )  return array();
 
-    // Vorher Aufruf einer nicht vorhandenen Methode - jeder EPN-Abruf endete mit einem Fatal Error
+    
     return $this->parseItems($this->getJson("/item-storage/items?query=" . $this->cql('hrid=="' . $EPN . '"'))["items"] ?? array(), $Format);
   }
 
@@ -596,8 +596,8 @@ class folio extends bms
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
     if ( !$this->configured() )  return $this->loginError($this->CS->getText("account.servernotresponding"));
 
-    // Anmeldung mit den Zugangsdaten der Nutzenden - nur zur Pruefung und fuer
-    // den Token, gehandelt wird mit dem Systemkonto
+    
+    
     $Login = $this->login($User, $Pass);
     if ( !isset($Login["token"]) )
     {
@@ -632,7 +632,7 @@ class folio extends bms
     if ( !empty($this->CS->display["items"]) )  $Return["items"] = $this->readAccountItems($UUID);
     if ( !empty($this->CS->display["fees"]) )   $Return["fees"]  = $this->readFees($UUID);
 
-    // Sperren wie bei paia: blocked + accountstatus + Hinweis
+    
     $Return["user"]["accountstatus"] = "";
     if ( $Data["expired"] )
     {
@@ -663,7 +663,7 @@ class folio extends bms
 
     $Data = $this->userData($Self);
     return array(
-      "username" => $Data["uuid"],      // = "login" aus checkUser()
+      "username" => $Data["uuid"],      
       "name"     => $Data["name"],
       "email"    => $Data["email"],
       "address"  => $Data["address"],
@@ -687,24 +687,24 @@ class folio extends bms
       if ( !isset($FIDs[$Field]) )  return $this->actionError("action.requesterror", "missingvalue: " . $Field);
     }
 
-    // Gewaehlte Theke, falls sie als FOLIO-Servicepunkt (UUID) kommt
+    
     $Pickup = $FIDs["pickupServicePointId"];
     if ( isset($Cond["desk"]) && preg_match('/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i', $Cond["desk"], $Match) )  $Pickup = $Match[1];
 
     $Response = $this->call("POST", "/circulation/requests", array(
       "requestLevel"          => "Item",
-      // Vorher immer "Page" - eine Vormerkung auf Ausgeliehenes ist in FOLIO ein "Hold"
+      
       "requestType"           => ( $Type == "reserve" ) ? "Hold" : "Page",
       "fulfillmentPreference" => "Hold Shelf",
       "requestDate"           => gmdate('Y-m-d\TH:i:s\Z'),
-      "requesterId"           => $Self["user"]["id"],     // nie die gepostete Kennung
+      "requesterId"           => $Self["user"]["id"],     
       "instanceId"            => $FIDs["instanceId"],
       "itemId"                => $FIDs["itemId"],
       "holdingsRecordId"      => $FIDs["holdingsRecordId"],
       "pickupServicePointId"  => $Pickup,
     ));
 
-    // Vorher "status" => "error": user.php hielt das fuer Erfolg ("error" >= 0)
+    
     if ( !in_array($Response["http"], array(200, 201)) )  return $this->actionError("action.requesterror", $this->errorMessage($Response));
 
     return $this->actionSuccess($Type == "reserve" ? "action.reservesuccessful" : "action.ordersuccessful",
@@ -721,7 +721,7 @@ class folio extends bms
     $FIDs = $this->getFolioArray($ID);
     if ( !isset($FIDs["itemBarcode"], $FIDs["userBarcode"]) )  return $this->actionError("action.renewerror", "missingvalue");
 
-    // Nur eigene Ausleihen
+    
     if ( $FIDs["userBarcode"] !== (string) ( $Self["user"]["barcode"] ?? "" ) )  return $this->actionError("action.renewerror", $this->CS->getText("account.checklogin"));
 
     $Response = $this->call("POST", "/circulation/renew-by-barcode", array("itemBarcode" => $FIDs["itemBarcode"],
@@ -741,7 +741,7 @@ class folio extends bms
     $FIDs = $this->getFolioArray($ID);
     if ( !isset($FIDs["id"]) )  return array("status" => -2, "code" => "missingvalue");
 
-    // Den Datensatz aus FOLIO nehmen, nicht aus der geposteten ID - und nur eigene Vormerkungen
+    
     $Request = $this->call("GET", "/circulation/requests/" . rawurlencode($FIDs["id"]));
     if ( $Request["http"] != 200 || !isset($Request["json"]["id"]) )  return array("status" => -2, "code" => "action.cancelerror", "more" => $this->errorMessage($Request));
     $Record = $Request["json"];
@@ -760,7 +760,7 @@ class folio extends bms
     return array("status" => 0);
   }
 
-  // Neu (14.09.2026) - fehlte, der Aufruf endete in einem Fatal Error
+  
   public function ChangeMail($Login, $Token, $New)
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -777,7 +777,7 @@ class folio extends bms
     $Response = $this->call("PUT", "/users/" . rawurlencode($UUID), $Record);
     if ( !in_array($Response["http"], array(200, 204)) )  return array("status" => -2, "more" => $this->errorMessage($Response));
 
-    unset(self::$verified[$Token]);   // _self ist jetzt veraltet
+    unset(self::$verified[$Token]);   
     return array("status" => 0, "email" => $New);
   }
 
@@ -793,14 +793,14 @@ class folio extends bms
                                                           "newPassword" => $New));
     if ( !in_array($Response["http"], array(200, 204)) )  return array("status" => -2, "more" => $this->errorMessage($Response));
 
-    // Wie paia: der vollstaendige Kontostand mit dem neuen Passwort (die
-    // Oberflaeche uebernimmt ihn, vorher kam nur {status: 0})
+    
+    
     $Tmp = $this->checkUser($Self["user"]["username"] ?? $Self["user"]["id"], $New);
     $Tmp["status"] = 1;
     return $Tmp;
   }
 
-  // Neu (14.09.2026) - fehlte. FOLIO verschickt die Mail zum Zuruecksetzen selbst.
+  
   public function ResetPW($Login)
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);

@@ -2,9 +2,9 @@
 
 class item
 {
-  // *******************************************************************
-  // ************* V A R S  &  C O N S T R U C T ***********************
-  // *******************************************************************
+  
+  
+  
   private $CS;
   private $aps;
   private $awop;
@@ -27,8 +27,8 @@ class item
   public function __construct($CS)
   {
 
-    // Inits which are static over multiple IDs
-    // ID-dependend vars: Initialized by public function getItems
+    
+    
     $this->CS        = $CS;
     $this->mode      = (MODE == "production") ? "prod" : "test";
     $this->awop      = (isset($this->CS->configs["item"]["articleswithoutparents"]) && trim($this->CS->configs["item"]["articleswithoutparents"]) == "y")
@@ -36,14 +36,14 @@ class item
     $this->aps       = (isset($this->CS->configs["item"]["articleparentshift"])     && trim($this->CS->configs["item"]["articleparentshift"])     == "y")
                        ? true : false;
                        
-    // Farben der Quasar-Palette (https://quasar.dev/style/color-palette).
-    // Dort hat jede Grundfarbe zusaetzlich Abstufungen mit Zahlensuffix
-    // ("light-green-10", "green-5", ...). Frueher standen hier nur einzelne
-    // Schreibweisen - "light-green" fehlte z.B., waehrend "light-green-10"
-    // aufgefuehrt war. Ein Exemplar mit "light-green" hob die Gruppenfarbe
-    // deshalb NICHT auf gruen an, die Gruppe blieb rot (2026-08-08 gemeldet
-    // fuer id 175990859). Die Abstufungen werden jetzt in normLight()
-    // abgeschnitten, hier stehen nur noch die Grundfarben.
+    
+    
+    
+    
+    
+    
+    
+    
     $this->lightsblue   = array("indigo", "blue", "light-blue", "cyan");
     $this->lightsgreen  = array("green", "light-green", "lime", "teal");
     $this->lightsyellow = array("amber", "orange", "yellow", "deep-orange");
@@ -51,26 +51,26 @@ class item
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
   }
 
-  // *************************************************
-  // ************* P R I V A T E *********************
-  // *************************************************
+  
+  
+  
 
-  // ************* T O O L S *************************
-  // Articleparentshift may only apply to haptic articles (not online, format
-  // "article") - an online article or a non-article (e.g. a haptic journal)
-  // must never be shifted onto its parent.
+  
+  
+  
+  
 
-  // Abstufungen der Quasar-Palette auf ihre Grundfarbe zurueckfuehren:
-  // "light-green-10" -> "light-green", "green-5" -> "green". Ohne das muesste
-  // jede der 14 Abstufungen je Farbe einzeln aufgefuehrt werden.
+  
+  
+  
 
-  // db-Angabe zu einer ILN aus der verschachtelten iln2bms-Struktur.
+  
   private function ilnDB($ILN)
   {
     if ( !$ILN || !isset($this->CS->configs["iln2bms"][$ILN]) )  return "";
     $Map = $this->CS->configs["iln2bms"][$ILN];
     if ( !is_array($Map) )  return "";
-    // Flache Altform (nur ein BMS je ILN) weiterhin verstehen.
+    
     if ( isset($Map["db"]) )  return $Map["db"];
     $First = reset($Map);
     return ( is_array($First) && isset($First["db"]) ) ? $First["db"] : "";
@@ -82,20 +82,20 @@ class item
   }
 
 
-  // Duerfen fuer diesen Satz Elterndaten geerbt werden? (17.08.2026)
-  //
-  // "Erben" meint hier die alte Mechanik: ein Satz ohne eigene Exemplare
-  // uebernimmt die des Elternteils. Sie hat bewusst KEINE Format- oder
-  // Besitzkriterien - fuer Baende mehrbaendiger Werke ist sie richtig so.
-  //
-  // Neu ist allein "!$this->aps": Bibliotheken, die den Artikel-Parentshift
-  // einsetzen, sollen keinen Shift durch einen ANDEREN Mechanismus bekommen.
-  // Dort gilt ausschliesslich die Regel mit den fuenf Kriterien.
-  //
-  // Anlass war ErfurtUB (aps = y): die Saetze 587725478, 1605750824 und
-  // 333327225 sind Buecher aus fremdem Bestand, zeigten aber die Exemplare
-  // ihrer Elternteile - nicht durch den Shift (der verlangt formatcode
-  // "article"), sondern durch dieses Erben.
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   private function useParent()
   {
     return ( $this->pid && !$this->awop && !$this->aps );
@@ -103,21 +103,21 @@ class item
 
   private function isHapticArticle()
   {
-    // Dieselben fuenf Kriterien wie in user.php, wo der Shift selbst entschieden
-    // wird - bis 11.08.2026 pruefte diese Stelle nur zwei davon (nicht online,
-    // Format "article") und lief damit auch fuer Artikel OHNE Eltern, mit
-    // eigenen M980-Exemplaren oder aus fremdem Bestand an. Beide Stellen
-    // muessen dasselbe verstehen, sonst weicht die Exemplarausgabe von der
-    // Shift-Entscheidung ab.
-    //   1. Eltern vorhanden UND geladen
-    //   2. nicht online (Solr-Feld remote_bool)
-    //   3. keine eigenen Exemplare aus M980 (M981/M856 bewusst nicht)
-    //   4. formatcode == "article"
-    //   5. eigener Bestand (owner / getOwnILNsOrCols)
-    // $this->pid ist rootid des Datensatzes - dieselbe Kennung, die user.php
-    // ueber $this->hierarchy["childs"][$ID] verwendet (siehe readCache2Marc).
-    // "owner" steht hier noch zur Verfuegung: aus der Ausgabe entfernt wird es
-    // erst ganz am Ende von user.php, lange nach der Exemplarverarbeitung.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     $Online = isset($this->one["online"])                ? $this->one["online"]                : false;
     $Format = isset($this->one["formatcode"])            ? $this->one["formatcode"]            : "";
     $Phys   = isset($this->one["itemcount"]["physical"]) ? $this->one["itemcount"]["physical"] : 0;
@@ -133,9 +133,9 @@ class item
 
   private function checkStrInWildArr($Str, $Arr)
   {
-    // $this->CS->debug("ALXI1", $Str);
-    // $this->CS->debug("ALXI2", $Arr);
-    // Schleife Standord-Gruppen
+    
+    
+    
     foreach ( $Arr as $One )
     {
       if ( substr($One, -1) == "*" )
@@ -153,9 +153,9 @@ class item
 
   private function checkArrInWildArr($Arr1, $Arr2)
   {
-    // $this->CS->debug("ALXI1", $Arr1);
-    // $this->CS->debug("ALXI2", $Arr2);
-    // Schleife Standord-Gruppen
+    
+    
+    
     foreach ( $Arr1 as $Str )
     {
       foreach ( $Arr2 as $One )
@@ -171,34 +171,34 @@ class item
         }
       }
     }
-    // $this->CS->debug("ALXI2E", "Ende");
+    
     return false;
   }
 
-  // "Es liegt eine PAIA-Antwort vor" - fuer p.paia und p.nopaia (09.09.2026).
-  //
-  // Gemeldet an MagdeburgStendalHS 369453840: der Fall "Interne Leihe SDL
-  // (ohne Kosten)" (casesmedia, mit "p.paia") erschien nie, obwohl der Satz
-  // eine PAIA-Antwort hat - und "Fernleihe mit Kosten" ("p.nopaia") kam auch
-  // dann durch, wenn eine vorlag.
-  //
-  // Grund: die beiden Bausteine lasen $DAIA, und $DAIA entsteht aus
-  // $Item["id"] - der PAIA-Kennung EINER Exemplarzeile. Die Medienfaelle
-  // (casesmedia) werden aber ohne Exemplar geprueft: setitems() ruft getExps()
-  // dort mit einem LEEREN $Item auf, weil sie fuer den ganzen Satz gelten und
-  // nicht fuer eine Zeile. Damit war $DAIA auf der Medienebene immer false -
-  // "p.paia" konnte nie zutreffen, "p.nopaia" immer.
-  //
-  // Auf der Exemplarebene bleibt alles wie bisher. Auf der Medienebene wird
-  // jetzt der Satz gefragt: hat IRGENDEIN Exemplar eine PAIA-Kennung? Dieselbe
-  // Quelle und dasselbe Muster benutzt "p.nobandlist" seit jeher fuer seinen
-  // Medienzweig ($this->CS->paias[<Satz>]).
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   private function hasPaia(&$Item)
   {
-    // Exemplarebene: die Zeile selbst traegt eine PAIA-Kennung.
+    
     if ( count($Item) )  return ( isset($Item["id"]) && trim($Item["id"]) != "" );
 
-    // Medienebene: am Satz fragen.
+    
     if ( !isset($this->CS->paias[$this->id]) || !is_array($this->CS->paias[$this->id]) )  return false;
     foreach ( $this->CS->paias[$this->id] as $PI )
     {
@@ -302,7 +302,7 @@ class item
 
   private function getPage()
   {
-    // $this->CS->debug("ALX333", $this->one["marc"]["M773"]);
+    
     $Recs = $this->getMarcSubFieldsArray("M773", array("I1", "g"));
     foreach ( $Recs as $Rec )
     {
@@ -313,13 +313,13 @@ class item
         if ( substr($G, 0, 6) == "pages:" ) return substr($G,6);
       }
     }
-    // $this->CS->debug("ALX333", $Recs);
+    
     return "";
   }
 
   private function getVolume()
   {
-    // $this->CS->debug("ALX333", $this->one["marc"]["M773"]);
+    
     $Recs = $this->getMarcSubFieldsArray("M773", array("I1", "g"));
     foreach ( $Recs as $Rec )
     {
@@ -334,13 +334,13 @@ class item
       }
       return implode(" ", $Tmp);
     }
-    // $this->CS->debug("ALX333", $Recs);
+    
     return "";
   }
 
   private function getMainData()
   {
-    // $this->CS->debug("ALX343", $this->one);
+    
     $More   = array();
     $More[] = "ID:\\t"             . $this->id;
     $More[] = "Titel:\\t"          . $this->CS->getMarcText($this->id, "bib_01");
@@ -354,7 +354,7 @@ class item
 
   private function repairLink($Link, $Item = [])
   {
-    // $this->CS->debug("ALX3", $Str);
+    
      if (  stripos($Link, "§")      !== false )     $Link = str_ireplace("§",      "#",       $Link);
      if (  stripos($Link, "<id>")   !== false )     $Link = str_ireplace("<id>",   $this->id, $Link);
      if (  stripos($Link, "<isbn>") !== false )
@@ -391,7 +391,7 @@ class item
      return str_ireplace(array("<point>", "<comma>"), array(".", ","), $Str);
   }
 
-  // ************* E L E M E N T S *******************
+  
   private function getActionElements($Case, $Item=array())
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -408,8 +408,8 @@ class item
     if ( substr($DA,0,2) == "l." )
     {
       $L = substr($DA,2);
-      // Link Block
-      // $this->CS->debug("ALXLML", $this->CS->links);
+      
+      
 
       if ( isset($this->CS->links[$L]) )
       {
@@ -429,7 +429,7 @@ class item
 
     switch ($DA)
     {
-      // PAIA Block
+      
       case  "p.order":
       {
         return array(
@@ -443,9 +443,9 @@ class item
       }
       case  "p.ordergroups":
       {
-        // $this->CS->debug("ALXMore", $More);
+        
 
-        // Allowed: 2 items
+        
         if ( count($More) != 2 ) break;
 
         return array(
@@ -472,9 +472,9 @@ class item
       }
       case  "p.reservegroups":
       {
-        // $this->CS->debug("ALXMore", $More);
+        
 
-        // Allowed: 2 items
+        
         if ( count($More) != 2 ) break;
 
         return array(
@@ -489,10 +489,10 @@ class item
         break;
       }
 
-      // MARC Block
+      
       case  "m.openaccess":
       {
-        // $this->CS->debug("ALXOA", $Item);
+        
         if ( !isset($Item["link"]) || !$Item["link"] )  break;
         return  array(
                                   "type"    => "link",
@@ -520,14 +520,14 @@ class item
         break;
       }
 
-      // Other Mail Block
+      
       case  "o.mailelse":
       {
-        // Frueher ein eigener Aktionstyp mit eigener Vue-Maske; jetzt der
-        // generische Dialog "else" aus dialogs/dialogfields, verschickt vom
-        // server-eigenen sendDialogMail() (19.08.2026). Der Betreff kommt dort
-        // aus getText("mail.subject.else"), also wie zuvor. Die Konfig-Pruefung
-        // bleibt: ohne hinterlegte Zieladresse gibt es den Knopf nicht.
+        
+        
+        
+        
+        
         if ( !isset($this->CS->configs["mail.".$this->mode]["else"]) || !$this->CS->configs["mail.".$this->mode]["else"] ) break;
         return  array(
                          "type"    => "dialog",
@@ -540,11 +540,11 @@ class item
       }
       case  "o.mailnotify":
       {
-        // Frueher ein eigener Aktionstyp mit eigener Vue-Maske; jetzt der
-        // generische Dialog "notify" aus dialogs/dialogfields, verschickt vom
-        // server-eigenen sendDialogMail() (19.08.2026). Der Betreff kommt dort
-        // aus getText("mail.subject.notify"), also wie zuvor. Die Konfig-Pruefung
-        // bleibt: ohne hinterlegte Zieladresse gibt es den Knopf nicht.
+        
+        
+        
+        
+        
         if ( !isset($this->CS->configs["mail.".$this->mode]["notify"]) || !$this->CS->configs["mail.".$this->mode]["notify"] ) break;
         return  array(
                          "type"    => "dialog",
@@ -557,11 +557,11 @@ class item
       }
       case  "o.mailorder":
       {
-        // Frueher ein eigener Aktionstyp mit eigener Vue-Maske; jetzt der
-        // generische Dialog "order" aus dialogs/dialogfields, verschickt vom
-        // server-eigenen sendDialogMail() (19.08.2026). Der Betreff kommt dort
-        // aus getText("mail.subject.order"), also wie zuvor. Die Konfig-Pruefung
-        // bleibt: ohne hinterlegte Zieladresse gibt es den Knopf nicht.
+        
+        
+        
+        
+        
         if ( !isset($this->CS->configs["mail.".$this->mode]["order"]) || !$this->CS->configs["mail.".$this->mode]["order"] ) break;
         return  array(
                          "type"    => "dialog",
@@ -574,11 +574,11 @@ class item
       }
       case  "o.mailreserve":
       {
-        // Frueher ein eigener Aktionstyp mit eigener Vue-Maske; jetzt der
-        // generische Dialog "reserve" aus dialogs/dialogfields, verschickt vom
-        // server-eigenen sendDialogMail() (19.08.2026). Der Betreff kommt dort
-        // aus getText("mail.subject.reserve"), also wie zuvor. Die Konfig-Pruefung
-        // bleibt: ohne hinterlegte Zieladresse gibt es den Knopf nicht.
+        
+        
+        
+        
+        
         if ( !isset($this->CS->configs["mail.".$this->mode]["reserve"]) || !$this->CS->configs["mail.".$this->mode]["reserve"] ) break;
         return  array(
                          "type"    => "dialog",
@@ -591,11 +591,11 @@ class item
       }
       case  "o.mailsuggest":
       {
-        // Frueher ein eigener Aktionstyp mit eigener Vue-Maske; jetzt der
-        // generische Dialog "suggest" aus dialogs/dialogfields, verschickt vom
-        // server-eigenen sendDialogMail() (19.08.2026). Der Betreff kommt dort
-        // aus getText("mail.subject.suggest"), also wie zuvor. Die Konfig-Pruefung
-        // bleibt: ohne hinterlegte Zieladresse gibt es den Knopf nicht.
+        
+        
+        
+        
+        
         if ( !isset($this->CS->configs["mail.".$this->mode]["suggest"]) || !$this->CS->configs["mail.".$this->mode]["suggest"] ) break;
         return  array(
                          "type"    => "dialog",
@@ -607,13 +607,13 @@ class item
         break;
       }
 
-      // Other Block
+      
       case "o.clientmail":
       {
-        // $this->CS->debug("ALXMAIL", $More);
-        // $this->CS->debug("ALXMAIL", $Item);
+        
+        
 
-        // Allowed: 3 or 4 items
+        
         if ( count($More) < 3 || count($More) > 4  ) break;
 
         $MailTo = isset($More[0]) ? $More[0] : "";
@@ -664,15 +664,15 @@ class item
                         "button"  => $Case["detailbutton"]
                        );
 
-        // $this->CS->debug("ALXMAIL", $Actions);
+        
         break;
       }
       case "o.delivery":
       {
-        // Lieferdienst laeuft jetzt ueber den generischen Dialog. GreifswaldUB
-        // hat ein erweitertes Formular (Signatur/Band/Seiten/...), das als
-        // "delivery2" in dialogfields steht; alle anderen "delivery"
-        // (19.08.2026, loest ItemDlgDelivery/Delivery2 des Altmoduls ab).
+        
+        
+        
+        
         return  array(
                       "type"    => "dialog",
                       "dialog"  => $this->CS->client == "GreifswaldUB" ? "delivery2" : "delivery",
@@ -756,10 +756,10 @@ class item
       }
       case  "o.opaclink":
       {
-        // iln2bms ist nach ILN UND bmsid verschachtelt - die db-Angabe haengt an der
-        // ILN, nicht am einzelnen BMS, deshalb genuegt der erste Eintrag. Der
-        // fruehere flache Zugriff iln2bms[iln]["db"] lief seit der
-        // Verschachtelung ins Leere und lieferte immer "" (21.08.2026).
+        
+        
+        
+        
         $DB       = $this->ilnDB(isset($Item["2"]["0"]) ? $Item["2"]["0"] : "");
 
         $OPACLINK = "";
@@ -837,7 +837,7 @@ class item
         break;
       }
 
-      // Library Block (Achtung - nur o.Bibliothek als Case und danach mit more abfragen ... )
+      
       case "o.iiif":
       {
         if ( !isset($Item["link"]) || !$Item["link"] )  break;
@@ -874,8 +874,8 @@ class item
       {
         if ( isset($More[0]) && $More[0] == "search" )
         {
-          // $this->CS->debug("ALXITEM", $More);
-          // $this->CS->debug("ALEXIWW", $this->one["rootid"]);
+          
+          
 
           if ( !isset($this->one["rootid"]) ) break;
           return array(
@@ -914,7 +914,7 @@ class item
 
     $TxtCnt   = 1;
     $Texts    = array("g" => array(), "e" => array());
-    // $this->CS->debug("AÖX111a", $Disps);
+    
 
     foreach ($Disps as $Disp)
     {
@@ -964,10 +964,10 @@ class item
                        ...$Tmp["e"]];
       }
 
-      // Working
+      
       elseif ( substr($Disp,0,2) == "l." )
       {
-        // $this->CS-debug("ALEXLI", $this->CS->links);
+        
         $Tmp = (isset($this->CS->links[substr($Disp,2)])) ? $this->CS->links[substr($Disp,2)] : array();
         if ( !isset($Tmp["german"])     || !isset($Tmp["english"]) )     continue;
         if ( !isset($Tmp["germanlink"]) || !isset($Tmp["englishlink"]) ) continue;
@@ -1029,7 +1029,7 @@ class item
         $Texts[] = $Disp;
       }
     }
-     // $this->CS->debug("ALX111b", $Texts);
+     
     return $Texts;
   }
 
@@ -1046,14 +1046,14 @@ class item
 
     switch ($Element)
     {
-      // m.hamburghsu.<wert> - Sonderbausteine HamburgHSU (15.09.2026)
+      
       case "hamburghsu":
       {
-        // m.hamburghsu.handapparat: EINE Zeile "Handapparat <M980 $f>" mit
-        // Link-Symbol auf die Liste der Handapparate. Text aus texts
-        // ("handapparat"), Adresse aus links ("hand") - beide pflegt die HSU in
-        // ihren Importdateien. Ohne Wert in $f (oder "--%%--") keine Zeile;
-        // ohne Link bleibt es beim Text.
+        
+        
+        
+        
+        
         if ( isset($More[0]) && $More[0] == "handapparat" )
         {
           $Nr = ( isset($Item["f"][0]) && trim($Item["f"][0]) !== "" && trim($Item["f"][0]) != "--%%--" ) ? trim($Item["f"][0]) : "";
@@ -1076,12 +1076,12 @@ class item
         break;
       }
 
-      // m.articlestock
+      
       case "articlestock":
       {
-        // $this->CS->debug("ALXI344", $Item);
-        // $this->CS->debug("ALXI344", $this->one);
-        // $this->CS->debug("ALXI344", $this->one["marc"]["M773"]);
+        
+        
+        
         $Val =  isset($this->one["marc"]["M773"][0]["g"][0]) ? $this->one["marc"]["M773"][0]["g"][0] : "";
 
         if ( $Val )
@@ -1096,19 +1096,19 @@ class item
         break;
       }
 
-      // m.comment
+      
       case "comment":
       {
-        // $this->CS->debug("ALX4353", $Item);
+        
         $Black = explode("|", $this->CS->configs["item"]["commentblacklist"]);
-        // $this->CS->debug("ALX4353", $Black);
+        
         $Vals  = array();
         if ( isset($Item["k"]) && is_array($Item["k"]) )
         {
           foreach ($Item["k"] as $Key => $Val)
           {
            if (in_array($Val, $Black)) continue;
-           // $this->CS->debug("ALXCOM", $Val);
+           
            $Vals[] = $Val;
           }
         }
@@ -1141,10 +1141,10 @@ class item
         break;
       }
 
-      // m.commentstrict
+      
       case "commentstrict":
       {
-        // $this->CS->debug("ALXCS", $Item);
+        
 
         $Gesehen = array();
 
@@ -1152,12 +1152,12 @@ class item
           && isset($Item["iln"]) && trim($Item["iln"]) && isset($Item["enr"]) && trim($Item["enr"]) )
         foreach ( $this->one["marc"]["M980"] as $Rec )
         {
-          // $this->CS->debug("ALXCS1", "22");
-          // Wie bei m.stockstrict zaehlt die EPN "00" als "gilt fuer ALLE
-          // Exemplare dieser ILN" (03.09.2026). Ein M981 mit $1 = 00 - der
-          // EZB-Link bei IlmenauTU 534054390 - ist genau so ein Eintrag; ohne
-          // diese Regel traf der Baustein dort auf keine der M980 (02, 03) und
-          // trug nichts bei, waehrend m.stockstrict den Bestand lieferte.
+          
+          
+          
+          
+          
+          
           if ( isset($Rec["2"][0]) && $Rec["2"][0] == $Item["iln"]
             && ( (isset($Rec["1"][0]) && $Rec["1"][0] == $Item["enr"]) || $Item["enr"] == "00" )
             && isset($Rec["k"]) && is_array($Rec["k"]) && count($Rec["k"]) )
@@ -1165,10 +1165,10 @@ class item
             foreach ($Rec["k"] as $Val )
             {
               if ( !trim($Val) )  continue;
-              // Mit der 00-Regel sieht ein Eintrag ALLE M980 dieser ILN - und
-              // derselbe Kommentar steht dort oft an jedem Exemplar ("Campus-
-              // lizenz TU Ilmenau" an M980 02 UND 03). Gleiche Texte deshalb
-              // nur einmal (03.09.2026).
+              
+              
+              
+              
               if ( in_array(strip_tags($Val), $Gesehen) )  continue;
               $Gesehen[] = strip_tags($Val);
               $Texts["g"][] = array("type" => "text",
@@ -1189,7 +1189,7 @@ class item
         break;
       }
 
-      // m.count
+      
       case "count":
       {
         $Val = isset($Item["a"][0]) ? intval($Item["a"][0]) : "";
@@ -1205,14 +1205,14 @@ class item
         break;
       }
       
-      // m.direct
+      
       case "direct":
       {
         if ( is_array($More) && count($More) >= 4 )
         {
           $Mama = "";
           $Kind = "";
-          // $this->CS->debug("ALX40", $this->CS->hierarchy);      
+          
           if ( array_key_exists($this->id,$this->CS->hierarchy["childs"]) ) {
             $Kind = $this->id;
             $Mama = $this->CS->hierarchy["childs"][$this->id];
@@ -1224,7 +1224,7 @@ class item
             $Mama = "";
           }
           
-          // $this->CS->debug("ALX40", $Mama);
+          
 
           $Tmp = [];
           $Type = substr(strtolower($More[0]),0,1) == "m" ? "M" : "P";
@@ -1237,7 +1237,7 @@ class item
               {
                 if ( isset($OneM["marc"]["M001"]) && $OneM["marc"]["M001"] == $Kind )
                 {
-                  // $this->CS->debug("ALX40", $Kind . " Kind M Found");
+                  
                   $Tmp = $OneM["marc"];
                   break;
                 }
@@ -1252,7 +1252,7 @@ class item
               {
                 if ( isset($OneM["marc"]["PM001"]) && $OneM["marc"]["PM001"] == $Mama)
                 {
-                  // $this->CS->debug("ALX40", $Mama . " Add Mama PM Found");
+                  
                   $Tmp = $OneM["marc"];
                   break;
                 }
@@ -1285,10 +1285,10 @@ class item
         break;
       }
 
-      // m.host
+      
       case "host":
       {
-        // $this->CS->debug("ALX3433", $Item);
+        
         if ( isset($Item["host"]) && trim($Item["host"]) )
         {
           $Texts["g"][] = array("type" => "text",
@@ -1299,10 +1299,10 @@ class item
         break;
       }
 
-      // m.location
+      
       case "location":
       {
-        // $this->CS->debug("ALX4353", $Item);
+        
         if ( isset($Item["f"][0]) && trim($Item["f"][0]) && $Item["f"][0] != "--%%--" )
         {
           $Texts["g"][] = array("type" => "text",
@@ -1313,7 +1313,7 @@ class item
         break;
       }
 
-      // m.stock
+      
       case "stock":
       {
         $Vals      = array();
@@ -1325,7 +1325,7 @@ class item
           }
         }
 
-        // $this->CS->debug("AlexIe2", $Vals);
+        
 
         if ( isset($Item["stock"]) && is_array($Item["stock"]) )
         {
@@ -1333,7 +1333,7 @@ class item
                    ...$Item["stock"]];
         }
 
-        // $this->CS->debug("AlexIe3", $Vals);
+        
 
         if ( is_array($Vals) && count($Vals) )
         {
@@ -1348,7 +1348,7 @@ class item
         break;
       }
 
-      // m.stockstrict
+      
       case "stockstrict":
       {
         if ( isset($this->one["marc"]["M980"]) && is_array($this->one["marc"]["M980"]) && count($this->one["marc"]["M980"])
@@ -1371,7 +1371,7 @@ class item
         break;
       }
 
-      // m.signature
+      
       case "signature":
       {
         $Vals      = array();
@@ -1383,14 +1383,14 @@ class item
         break;
       }
 
-      // m.locationsignature
+      
       case "locationsignature":
       {
-        // Wie m.signature, nur jeder Signatur den Standort aus m980 f
-        // vorangestellt: "Signatur: Lesesaal:GC 5927" (02.09.2026).
-        //
-        // Fehlt der Standort, bleibt es bei der reinen Signatur - der Baustein
-        // soll die Signatur nicht verschlucken, nur weil m980 f leer ist.
+        
+        
+        
+        
+        
         $Vals      = array();
         $Loc       = isset($Item["f"][0]) && trim($Item["f"][0]) && $Item["f"][0] != "--%%--"
                      ? trim($Item["f"][0]) : "";
@@ -1402,18 +1402,18 @@ class item
         break;
       }
 
-      // m.prov
+      
       case "prov":
       {
-        // $this->CS->debug("ALX3433", $Item);
-        // $this->CS->debug("ALX3433", $this->one);
+        
+        
 
         if ( isset($this->one["marc"]["M982"]) && is_array($this->one["marc"]["M982"]) )
         {
           $Vals      = array();
           foreach ( $this->one["marc"]["M982"] as $Rec )
           {
-            // $this->CS->debug("ALX3433", $Rec);
+            
             if ( isset($Rec["1"][0]) && isset($Item["1"]) && $Rec["1"][0] == $Item["1"]
               && isset($Rec["2"][0]) && isset($Item["2"]) && $Rec["2"][0] == $Item["2"]
               && isset($Rec["a"][0]) && substr($Rec["a"][0],0,11) == "Provenienz:")  $Vals[] = $Rec["a"][0];
@@ -1429,10 +1429,10 @@ class item
         break;
       }
 
-      // m.usagelink
+      
       case "usagelink":
       {
-        // $this->CS->debug("ALXITM", $Item);
+        
         if ( isset($Item["usagelinks"]) && is_array($Item["usagelinks"]) && count($Item["usagelinks"]) )
         {
           foreach ( $Item["usagelinks"] as $UL )
@@ -1483,13 +1483,13 @@ class item
 
     switch ($Element)
     {
-      // o.opaclink
+      
       case "opaclink":
       {
-        // iln2bms ist nach ILN UND bmsid verschachtelt - die db-Angabe haengt an der
-        // ILN, nicht am einzelnen BMS, deshalb genuegt der erste Eintrag. Der
-        // fruehere flache Zugriff iln2bms[iln]["db"] lief seit der
-        // Verschachtelung ins Leere und lieferte immer "" (21.08.2026).
+        
+        
+        
+        
         $DB       = $this->ilnDB(isset($Item["2"]["0"]) ? $Item["2"]["0"] : "");
         $OPACLINK = "";
         if ( MODE == "production" && isset($this->CS->bms[$this->CS->bmsid]["options"]["prodopaclink"]) && $this->CS->bms[$this->CS->bmsid]["options"]["prodopaclink"] )
@@ -1516,50 +1516,50 @@ class item
         return $Texts;
       }
 
-      // o.signatures
+      
       case "signatures":
       {
         return $this->getSignatureStockComment(true, false, false);
       }
 
-      // o.signaturestocks
+      
       case "signaturestocks":
       {
         return $this->getSignatureStockComment(true, true, false);
       }
 
-      // o.signaturecomments
+      
       case "signaturecomments":
       {
         return $this->getSignatureStockComment(true, false, true);
       }
 
-      // o.signaturestockcomments
+      
       case "signaturestockcomments":
       {
         return $this->getSignatureStockComment(true, true, true);
       }
 
-      // o.stocks
+      
       case "stocks":
       {
         return $this->getSignatureStockComment(false, true, false);
       }
 
-      // o.stockcomments
+      
       case "stockcomments":
       {
         return $this->getSignatureStockComment(false, true, true);
 
       }
 
-      // o.comments
+      
       case "comments":
       {
         return $this->getSignatureStockComment(false, false, true);
       }
 
-      // o.usagecode
+      
       case "usagecode":
       {
         $Rec = $this->getMarcSubFieldArray("M980", "u");
@@ -1599,10 +1599,10 @@ class item
         return $Texts;
       }
 
-      // o.vscout
+      
       case "vscout":
       {
-        // $this->CS->debug("ALX", $this->CS->configs["other"]);
+        
         $VSLink  = ( isset($this->CS->configs["other"]["vscout.link"]) && $this->CS->configs["other"]["vscout.link"] )
                    ? $this->CS->configs["other"]["vscout.link"]
                    : "";
@@ -1614,10 +1614,10 @@ class item
                    : array();
 
 
-        // $this->CS->debug("ALX", $VSLink);
-        // $this->CS->debug("ALX", $VSWhite);
-        // $this->CS->debug("ALX", $VSBlack);
-        // $this->CS->debug("ALX", $Item);
+        
+        
+        
+        
 
         $ItemILNLoc = ( isset($Item["2"][0]) && $Item["2"][0]
                      && isset($Item["f"][0]) && $Item["f"][0] ) ? trim($Item["2"][0]) . ":" . trim($Item["f"][0]) : "";
@@ -1626,15 +1626,15 @@ class item
 
         $Found = false;
 
-        // Whitelist to turn "true"
+        
         foreach ($VSWhite as $I => $Block)
         {
           $FoundKeys = 0;
           foreach ($Block as $Key => $Val)
           {
-            // $this->CS->debug("ALX", $Key);
-            // $this->CS->debug("ALX", $Val);
-            // $this->CS->debug("ALX", $Item[$Key]);
+            
+            
+            
             if ( isset($Item[$Key]) )
             {
               if ( substr($Val, -1) == "*" )
@@ -1663,12 +1663,12 @@ class item
             break;
           }
         }
-        // $this->CS->debug("ALX", $FoundKeys);
+        
 
         if ( !$Found ) return $Texts;
 
 
-        // Blacklist to turn "false"
+        
         foreach ($VSBlack as $I => $Block)
         {
           $FoundKeys = 0;
@@ -1699,7 +1699,7 @@ class item
         if ( !$Found ) return $Texts;
 
 
-        // Achtung Elemente trimmen!!
+        
 
         if ( $VSLink && $ItemSig )
         {
@@ -1731,7 +1731,7 @@ class item
                                   "text" => $T["english"],
                                   "link" => trim($Item["remoteitems"][0]["href"]));
           }
-          // $this->CS->debug("ALX", $Item);
+          
         }
       }      
       return $Texts;
@@ -1742,14 +1742,14 @@ class item
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // $this->CS->debug("AUEW254", $Item);
-    // $this->CS->debug("AUEW255", $Text);
+    
+    
 
     $Texts = array("g" => array(), "e" => array());
 
     switch ( $Text )
     {
-      // f.status
+      
       case 'status':
       {
         if ( isset($Item["status"]) && $Item["status"] )
@@ -1771,14 +1771,14 @@ class item
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // $this->CS->debug("AUEW254", $Item);
-    // $this->CS->debug("AUEW255", $Text);
+    
+    
 
     $Texts = array("g" => array(), "e" => array());
 
     switch ($Text)
     {
-      // p.department
+      
       case 'department':
       {
         if ( isset($Item["department"]) && $Item["department"] )
@@ -1790,7 +1790,7 @@ class item
         }
         break;
       }
-      // p.label
+      
       case 'label':
       {
         if ( isset($Item["label"]) && $Item["label"] )
@@ -1802,7 +1802,7 @@ class item
         }
         break;
       }
-      // p.signature
+      
       case 'signature':
       {
         if ( isset($Item["label"]) )
@@ -1821,7 +1821,7 @@ class item
         }
         break;
       }
-      // p.storage
+      
       case 'storage':
       {
         if ( isset($Item["storage"]) && $Item["storage"] )
@@ -1833,13 +1833,13 @@ class item
         }
         break;
       }
-      // p.storagelink
+      
       case 'storagelink':
       {
         if ( isset($Item["storage"]) && $Item["storage"]
           && isset($Item["storagelink"]) && $Item["storagelink"] )
         {
-          // $this->CS->debug("ALX7373", $Item);
+          
           $Texts["g"][] = array("type" => "link",
                                 "text" => $Item["storage"] . " ",
                                 "link" => $Item["storagelink"]);
@@ -1849,7 +1849,7 @@ class item
         }
         break;
       }
-      // p.about
+      
       case 'about':
       {
         if ( isset($Item["about"]) && $Item["about"] )
@@ -1864,7 +1864,7 @@ class item
         }
         break;
       }
-      // p.aboutfirstline
+      
       case 'aboutfirstline':
       {
         if ( isset($Item["about"]) && $Item["about"] )
@@ -1883,13 +1883,13 @@ class item
         }
         break;
       }
-      // p.queue
+      
       case 'queue':
       {
         $Tmp = array();
         if ( isset($Item["loanitems"][0]["queue"])         && $Item["loanitems"][0]["queue"]         != "-" ) $Tmp[] =  $Item["loanitems"][0]["queue"];
         if ( isset($Item["presentationitems"][0]["queue"]) && $Item["presentationitems"][0]["queue"] != "-" ) $Tmp[] =  $Item["presentationitems"][0]["queue"];
-        // $Tmp = array_filter($Tmp);  // Otherwise zero will be filtered and not shown
+        
         if ( count($Tmp) )
         {
           $T   = $this->CS->getTextBothLang("items.queue");
@@ -1901,7 +1901,7 @@ class item
         }
         break;
       }
-      // p.expected
+      
       case 'expected':
       {
         $Tmp = array();
@@ -1919,7 +1919,7 @@ class item
         }
         break;
       }
-      // p.chronology
+      
       case "chronology":
       {
         if ( isset($Item["chronology"]) && $Item["chronology"] )
@@ -1935,7 +1935,7 @@ class item
         }
         break;
       }
-      // p.epn
+      
       case "epn":
       {
         if ( isset($Item["epn"]) && $Item["epn"] )
@@ -1953,14 +1953,14 @@ class item
     return $Texts;
   }
 
-  // ************* M E T A *******************
+  
 
-  // Thekenwahl
+  
   private function addDeskUsers($Loc, $Item, &$Exemplar = array())
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // $this->CS->debug("ALX73", $Exemplar);
+    
 
     $Desk  = "";
     $User  = "";
@@ -1981,7 +1981,7 @@ class item
         $StorID = strtolower($Item["storageid"]);
         $AUI    = isset($Item["e"][0]) ? $Item["e"][0] : "";
 
-        // Use direct Loc
+        
         if ( isset($this->CS->locations[$Mode][$Loc][$StorID]) )
         {
           if ( $AUI && isset($this->CS->locations[$Mode][$Loc][$StorID][$AUI]["deskgroup"]) &&
@@ -1999,7 +1999,7 @@ class item
         }
         else
         {
-          // Use group loc
+          
           if ( isset($this->CS->locations["loc2group"][$Loc]) )
           {
             $Loc2 = $this->CS->locations["loc2group"][$Loc];
@@ -2021,7 +2021,7 @@ class item
           }
           else
           {
-            // Use child loc
+            
             if ( isset($this->CS->locations["group2loc"][$Loc]) )
             {
               foreach ($this->CS->locations["group2loc"][$Loc] as $Loc2)
@@ -2055,18 +2055,18 @@ class item
     return array("desks" => $Desks,  "users" => $Users);
   }
 
-  // Signaturen, Bestände & Kommentare
+  
   private function getSignatureStockComment($Sig, $Sto, $Com)
   {
-    // Must be taken from childid
-    // Not working:
-    // $Recs = $this->getMarcSubFieldsArray("M773", array("g", "q"));
-    // $this->CS->results["marc"][$this->id]["M773"]
+    
+    
+    
+    
 
     $SSCs = array();
 
-    // $this->CS->debug("ALX", $Sto);
-    // $this->CS->debug("ALX", $this->one["marc"]);
+    
+    
 
     if ( $Sto )
     {
@@ -2136,15 +2136,15 @@ class item
       }
     }
 
-    // $this->CS->debug("ALX2S", $SSCs);
+    
 
-    // Make multidimensional array unique
-    // $SSCs  = $this->getUniqueMultArray($SSCs);
-    // $this->CS->debug("ALX22", $SSCs);
+    
+    
+    
     $Texts = array("g" => array(), "e" => array());
     if ( is_array($SSCs) && count($SSCs) )
     {
-      // $this->CS->debug("ALX2", $SSCs);
+      
       foreach ($SSCs as $SSC)
       {
         if ( isset($SSC["signature"]) && is_array($SSC["signature"]) && count($SSC["signature"]) )
@@ -2176,12 +2176,12 @@ class item
       }
     }
 
-    // $this->CS->debug("ALX3E", $Texts);
+    
     return $Texts;
   }
 
-  // $Location wird nur vom Baustein m.locationsignature gesetzt. Ist er leer,
-  // arbeitet die Funktion unveraendert wie bisher (m.signature).
+  
+  
   private function modifySignatureLocal(&$Item, $Location = "")
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -2193,12 +2193,12 @@ class item
     $Vs                      = array();
     if ( file_exists($File) )
     {
-      // Library rules
+      
       include $File;
     }
     else
     {
-      // Common rules
+      
       $Vals = array();
       foreach ($Item["d"] as $Key => $Val)
       {
@@ -2214,7 +2214,7 @@ class item
                            "text" => $T["german"] . ": " .  implode(", ", $Vals));
         $Vs["e"][] = array("type" => "text",
                            "text" => $T["english"] . ": " .  implode(", ", $Vals));
-        // $this->CS->debug("ALXITEM", $Vs);
+        
       }
       else
       {
@@ -2222,12 +2222,12 @@ class item
       }
     }
 
-    // Standortvariante (m.locationsignature, 02.09.2026).
-    //
-    // Sie setzt die Ausgabe aus DENSELBEN Werten neu zusammen und haengt an
-    // jede Signatur vorne "<Standort>:". Damit gelten die Regeln der Bibliothek aus
-    // clients/<Client>/signature.php auch hier - sie hinterlassen ihre
-    // gefilterte Liste in $Vals, und genau daran wird weitergearbeitet.
+    
+    
+    
+    
+    
+    
     if ( $Location !== "" )
     {
       if ( isset($Vals) && is_array($Vals) && count($Vals) )
@@ -2247,14 +2247,14 @@ class item
       }
     }
 
-    // Signaturwert fett - HIER und nicht in den einzelnen Regeln oben:
-    // durch diese Stelle laeuft sowohl die allgemeine Regel als auch jede
-    // bibliothekseigene aus clients/<Client>/signature.php, damit sieht die
-    // Ausgabe ueberall gleich aus (2026-08-25 gewuenscht).
-    //
-    // Ausgezeichnet wird der Teil HINTER dem Etikett ("Signatur: **GC 5927**").
-    // Fehlt das Etikett - eine eigene Regel muss es nicht setzen -, wird der
-    // ganze Text fett.
+    
+    
+    
+    
+    
+    
+    
+    
     $Labels = $this->CS->getTextBothLang("items.signature");
     foreach ( array("g" => "german", "e" => "english") as $Lang => $Key )
     {
@@ -2268,7 +2268,7 @@ class item
       }
     }
 
-    // $this->CS->debug("ALXu3z", array("status" => $Status, "values" => $Vs));
+    
     return array("status" => $Status, "values" => $Vs);
   }
 
@@ -2276,9 +2276,9 @@ class item
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // Library rules
+    
 
-    // - Functions
+    
     $File                    = dirname(__FILE__) . DIRECTORY_SEPARATOR . "clients"
                                . DIRECTORY_SEPARATOR . $this->CS->client
                                . DIRECTORY_SEPARATOR . "itemfunctions.php";
@@ -2287,7 +2287,7 @@ class item
       include_once($File);
     }
 
-    // - Item Modifications
+    
     $File                    = dirname(__FILE__) . DIRECTORY_SEPARATOR . "clients"
                                . DIRECTORY_SEPARATOR . $this->CS->client
                                . DIRECTORY_SEPARATOR . "item.php";
@@ -2310,9 +2310,9 @@ class item
     return $Comments;
   }
 
-  // ************* M A I N *******************
+  
 
-  // Gruppen bestimmen
+  
   private function setCombs()
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
@@ -2323,25 +2323,25 @@ class item
     $EPN   = 0;
     $Skip  = false;
 
-    // Configs
+    
     $MLocs = ( isset($this->CS->configs["item"]["multiplelocations"])   && $this->CS->configs["item"]["multiplelocations"]  == "y" )
              ? true : false;
     $MKeys = ( isset($this->one["items"]) && count($this->one["items"]) )
              ? array_keys($this->one["items"]) : array();
 
-    // $this->CS->debug("ALXCMB2", $this->pid);
-    // $this->CS->debug("ALXCMB2", $this->awop);
-    // $this->CS->debug("ALXCMB2", $MKeys);
-    // $this->CS->debug("ALXCMB2", $this->CS->works);
+    
+    
+    
+    
 
     if ( $this->pid && !$this->awop && !count($MKeys) && isset($this->CS->works["add"][$this->pid]) )
     {
-      // Bibliotheken mit Artikel-Parentshift bekommen keinen Shift durch einen
-      // anderen Mechanismus (17.08.2026).
+      
+      
       if ( $this->aps )
       {
-        // Nur der Shift selbst zieht die Exemplare des Elternteils heran, und
-        // nur fuer haptische Artikel. Alles andere behaelt seine eigenen.
+        
+        
         if ( $this->isHapticArticle() )
         {
           $this->one["items"] = $this->CS->works["add"][$this->pid]["items"];
@@ -2351,8 +2351,8 @@ class item
       }
       else
       {
-        // Alte Mechanik, unveraendert: ohne eigene Exemplare die des
-        // Elternteils erben (Baende mehrbaendiger Werke).
+        
+        
         $MKeys     = ( isset($this->CS->works["add"][$this->pid]["items"]) && count($this->CS->works["add"][$this->pid]["items"]) )
                    ? array_keys($this->CS->works["add"][$this->pid]["items"])
                    : array();
@@ -2362,21 +2362,21 @@ class item
     $PKeys = ( isset($this->CS->paias[$this->id])
             && count($this->CS->paias[$this->id]) )  ? array_keys($this->CS->paias[$this->id]) : array();
 
-    // $this->CS->debug("ALXCMB2", $PKeys);
+    
 
-    // Merge items info comb
+    
     $AllItems   = array_unique(array_merge($MKeys, $PKeys));
-    // $this->CS->debug("ALX32", $AllItems);
+    
     foreach ($AllItems as $LukidaID )
     {
-      // Get Paia
+      
       $Combs[$LukidaID] = (isset($this->CS->paias[$this->id][$LukidaID])) ? $this->CS->paias[$this->id][$LukidaID] : array();
-      if ( !isset($Combs[$LukidaID]["about"]) ) $Combs[$LukidaID]["about"] = "";      // Ensure about in PAIA answer
+      if ( !isset($Combs[$LukidaID]["about"]) ) $Combs[$LukidaID]["about"] = "";      
 
-      // Get bandlist-safe EPN
-      $EPN = (isset($Combs[$LukidaID]["epn"])) ? $Combs[$LukidaID]["epn"] : 0;  // Must: Numeric for incrementing
+      
+      $EPN = (isset($Combs[$LukidaID]["epn"])) ? $Combs[$LukidaID]["epn"] : 0;  
 
-      // Add Marc
+      
       if ( $EPN != 0 )
       {
         if (isset($this->one["items"][$EPN])) $Combs[$LukidaID] += $this->one["items"][$EPN];
@@ -2395,17 +2395,17 @@ class item
           }
         }
       }
-      // $this->CS->debug("ALX33", $Combs[$LukidaID]);
+      
     }
 
-    // $this->CS->debug("ALX33", $Combs);
+    
 
-    // Determine location on multiple locations
+    
     if ( count($Combs) )
     {
       foreach ($Combs as $ExpID => $Item)
       {
-        // Global online item
+        
         if ( isset($Item["loc"]) && $Item["loc"] == "onlineglobal" )
         {
           $Item["loc"] = "online";
@@ -2413,26 +2413,26 @@ class item
         }
         elseif ( !$MLocs && isset($Item["loc"]) && $Item["loc"] == "onlinelocal" )
         {
-          // Local online item (single location)
+          
           $Item["loc"] = "online";
           $Loc = $Item["loc"];
         }
         elseif ( $MLocs  )
         {
-          // Local online item (multiple location)
+          
           if ( isset($Item["loc"]) && $Item["loc"] == "onlinelocal"
             && isset($this->CS->locations["onlineids"]) && is_array($this->CS->locations["onlineids"]) && count($this->CS->locations["onlineids"]) > 0
             && isset($Item["iln"]) && isset($this->CS->locations["onlineids"][$Item["iln"]]) )
           {
             $Loc = $this->CS->locations["onlineids"][$Item["iln"]];
           }
-          // Local online item
+          
           elseif ( isset($Item["loc"]) && $Item["loc"] == "onlinelocal" )
           {
             $Item["loc"] = "online";
             $Loc = $Item["loc"];
           }
-          // Physical local items
+          
           elseif ( isset($this->CS->locations["imp"]) && is_array($this->CS->locations["imp"]) && count($this->CS->locations["imp"]) > 0 )
           {
             $ItemILNLoc  = "";
@@ -2453,14 +2453,14 @@ class item
             if ( isset($Item["e"][0]) ) $ItemILNAUI .= $Item["e"][0];
 
             $Loc = "";
-            // Skip Locations
+            
             if ( isset($this->CS->locations["skip"]["loc"]) && is_array($this->CS->locations["skip"]["loc"])
               && in_array($ItemILNLoc, $this->CS->locations["skip"]["loc"]) )
             {
               $Skips[] = $ExpID;
               continue;
             }
-            // Skip Signatures
+            
             elseif ( isset($this->CS->locations["skip"]["sig"]) && is_array($this->CS->locations["skip"]["sig"])
               && in_array($ItemILNSig, $this->CS->locations["skip"]["sig"]) )
             {
@@ -2469,17 +2469,17 @@ class item
             }
             else
             {
-              // $this->CS->debug("ALX23233", $this->CS->locations["exp"]);
+              
               foreach ( $this->CS->locations["exp"] as $IL => $Conds )
               {
-                // $this->CS->debug("ALX23233", $IL);
-                // $this->CS->debug("ALX24", $Conds);
+                
+                
 
                 $Found = array("loc" => false, "sig" => false, "man" => false, "aui" => false);
-                // Part Location
+                
                 if ( isset($Conds["loc"]) && count($Conds["loc"]) )
                 {
-                  // Fester Wert, Wildcard (T*) oder regulaerer Ausdruck (^...) - base/_librarys/LocRule.php (15.09.2026)
+                  
                   foreach ( $Conds["loc"] as $O )
                   {
                     if ( LocRule::matches($O, $ItemILNLoc, ":") )  {$Found["loc"] = true; break;}
@@ -2490,10 +2490,10 @@ class item
                 {
                   $Found["loc"] = true;
                 }
-                // Part Signature
+                
                 if ( isset($Conds["sig"]) && count($Conds["sig"]) )
                 {
-                  // Fester Wert, Wildcard (T*) oder regulaerer Ausdruck (^...) - base/_librarys/LocRule.php (15.09.2026)
+                  
                   foreach ( $Conds["sig"] as $O )
                   {
                     if ( LocRule::matches($O, $ItemILNSig, ":") )  {$Found["sig"] = true; break;}
@@ -2504,10 +2504,10 @@ class item
                 {
                   $Found["sig"] = true;
                 }
-                // Part Mandant
+                
                 if ( isset($Conds["man"]) && count($Conds["man"]) )
                 {
-                  // Fester Wert, Wildcard (T*) oder regulaerer Ausdruck (^...) - base/_librarys/LocRule.php (15.09.2026)
+                  
                   foreach ( $Conds["man"] as $O )
                   {
                     if ( LocRule::matches($O, $ItemILNMan, "@") )  {$Found["man"] = true; break;}
@@ -2518,12 +2518,12 @@ class item
                 {
                   $Found["man"] = true;
                 }
-                // $this->CS->debug("ALX25", $Found);
+                
 
-                // Part AUI
+                
                 if ( isset($Conds["aui"]) && count($Conds["aui"]) )
                 {
-                  // Fester Wert, Wildcard (T*) oder regulaerer Ausdruck (^...) - base/_librarys/LocRule.php (15.09.2026)
+                  
                   foreach ( $Conds["aui"] as $O )
                   {
                     if ( LocRule::matches($O, $ItemILNAUI, ":") )  {$Found["aui"] = true; break;}
@@ -2534,7 +2534,7 @@ class item
                 {
                   $Found["aui"] = true;
                 }
-                // Final Check
+                
                 if ($Found["loc"] && $Found["sig"] && $Found["man"]&& $Found["aui"])
                 {
                   $Loc = $IL;
@@ -2554,26 +2554,26 @@ class item
           $Loc = "default";
         }
 
-        // $this->CS->debug("ALXLOC", $ExpID . " -> " . $Loc);
+        
 
         if ( $this->CS->client == "PotsdamUB" && isset($Item["label"]) && strlen(trim($Item["label"])) == 4 )
         {
-          // PAIA Antwort soll Vorrang haben aufgrund internen Verlegungen (nur innerhalb OUS-Verleihmodul)
-          // $this->CS->debug("ALX344", $Item);
+          
+          
           $Switch = array("1080" => "11frh",
                           "1180" => "09frh",
                           "2080" => "golm",
                           "3080" => "bbb",
                           "4080" => "10frh");
           if ( array_key_exists($Item["label"], $Switch) )  $Loc = $Switch[$Item["label"]];
-          if ( !isset($Item["about"]) ) $Item["about"] = "";  // Important for sorting
+          if ( !isset($Item["about"]) ) $Item["about"] = "";  
         }
 
         $Combs[$ExpID]["loc"] = $Loc;
         if ( !isset($Combs[$ExpID]["about"]) ) $Combs[$ExpID]["about"] = "";
         $Locs[] = $Loc;
       }
-      // $this->CS->debug("ALX36", $Combs);
+      
 
       if ( (isset($this->CS->configs["item"]["sortabout"]) && $this->CS->configs["item"]["sortabout"] == "y") || $this->epn)
       {
@@ -2582,17 +2582,17 @@ class item
       $Locs   = array_values(array_unique($Locs));
     }
 
-    // $this->CS->debug("ALX33", $this->id);
-    // $this->CS->debug("ALX341", $Locs);
-    // $this->CS->debug("ALX342", $Combs);
+    
+    
+    
 
-    // $this->CS->debug("ALX342", array_column($Combs, "b"));
-    // $this->CS->debug("ALX342", array_column($Combs, "1"));
-    // $this->CS->debug("ALX342", array_column($Combs, "about"));
+    
+    
+    
 
-    // $this->CS->debug("ALX343",  $this->CS->locations["hiersort"]);
+    
 
-    // Sort groups based on location interface sorts
+    
     if ( isset($this->CS->locations["hiersort"]) && is_array($this->CS->locations["hiersort"]) && count($this->CS->locations["hiersort"])
       && isset($Locs)                            && is_array($Locs)                            && count($Locs)
       && isset($Combs)                           && is_array($Combs)                           && count($Combs) )
@@ -2603,7 +2603,7 @@ class item
       {
         if (isset($Sort["id"]) && in_array($Sort["id"], $Locs) )
         {
-          // $Key = array_search($Sort["id"], array_column($Combs, 'loc'));
+          
 
           foreach ( $Combs as $EPN => $C )
           {
@@ -2614,8 +2614,8 @@ class item
             }
           }
 
-          // $this->CS->debug("ALX56", $Sort["id"]);
-          // $this->CS->debug("ALX57", $Tmpa);
+          
+          
         }
       }
 
@@ -2633,15 +2633,15 @@ class item
             }
           }
 
-          // $this->CS->debug("ALX56", $Sort["id"]);
-          // $this->CS->debug("ALX57", $Tmpa);
+          
+          
         }
       }
 
 
-      // $this->CS->debug("ALX57", $MissingLocs);
-      // $this->CS->debug("ALX57", $TmpC);
-      // $this->CS->debug("ALX57", $TmpL);
+      
+      
+      
       $Combs = $TmpC;
       $Locs  = $TmpL;
     }
@@ -2650,18 +2650,18 @@ class item
     $this->one["locs"]  = $Locs;
     $this->one["combs"] = $Combs;
     if ( $this->CS->display["comb"] ) $this->CS->results["comb"][$this->id] = $Combs;
-    // $this->CS->debug("ALX35", $this->one);
+    
   }
 
-  // Pro Gruppe: Emeplare bestimmen
+  
   private function setitems()
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // $this->CS->debug("ALXLocss", $this->one["locs"]);
-    // $this->CS->debug("ALXCombs", $this->one["combs"]);
+    
+    
 
-    // Init vars
+    
     $this->one["logs"]  = array();
     $Items  = array();
     $GIdx   = 0;
@@ -2673,7 +2673,7 @@ class item
 
       foreach ($this->one["combs"] as $Item)
       {
-        // Skip wrong group items
+        
         if ( !isset($Item["loc"]) || $Item["loc"] != $Loc ) continue;
 
         if ( isset($Item["f"][0]) && trim($Item["f"][0]) && $Item["f"][0] != "--%%--" )   $this->location[] = $Item["f"][0];
@@ -2688,10 +2688,10 @@ class item
         }
 
         $ILN = isset($Item["2"][0]) ? $Item["2"][0] : "";
-        // $this->CS->debug("ALX35", $Loc);
-        // $this->CS->debug("ALX35", $Item["b"][0]);
+        
+        
 
-        // $this->CS->debug("ALX55", $Item);
+        
         $this->getExps($Exps, $this->id, $this->CS->cases, $Item);
       }
 
@@ -2699,7 +2699,7 @@ class item
       {
         $Tmp = $this->CS->getTextBothLang("location." . $Loc);
         $Items["group_".++$GIdx] = array("code"       => $Loc,
-                                         "label"      => $Loc,   // Can be removed May 2026
+                                         "label"      => $Loc,   
                                          "text"       => array("g" => array(array("type" => "text", "text" => $Tmp["german"])),
                                                                "e" => array(array("type" => "text", "text" => $Tmp["english"]))),
                                          "before"     => $this->getGroupComment($ILN),
@@ -2709,8 +2709,8 @@ class item
       }
     }
 
-    // Für Wiko bei gedrehter Reihenfolge der Gruppen (alle anderen siehe unten)
-    // Add more groups which are available from marc
+    
+    
     if ( !$this->epn &&  isset($this->CS->configs["other"]["groupsreverse"]) && $this->CS->configs["other"]["groupsreverse"] == 'y' )
     {
       $this->AddMoregroups($Items, $GIdx);
@@ -2718,22 +2718,22 @@ class item
 
     if ( !$this->epn )
     {
-      // $this->CS->debug("ALX52", $this->one["itemcount"]);
+      
       $this->setLog("Media", "New PPN " . $this->id);
       $Exps       = array();
       $Empty      = array();
       $this->best = "red";
       $this->getExps($Exps, $this->id, $this->CS->casesmedia, $Empty);
 
-      // $this->CS->debug("ALX58", $Hits);
-      // $this->CS->debug("ALX", $Exps);
-      // $this->CS->debug("ALX", $this->logs);
-      // Finalize first loop: location
+      
+      
+      
+      
       if (count($Exps))
       {
         $Tmp = $this->CS->getTextBothLang("location.media");
         $Items["group_".++$GIdx] = array("code"       => "media",
-                                         "label"      => "media",   // Can be removed May 2026
+                                         "label"      => "media",   
                                          "text"       => array("g" => array(array("type" => "text", "text" => $Tmp["german"])),
                                                                "e" => array(array("type" => "text", "text" => $Tmp["english"]))),
                                          "before"     => array(),
@@ -2743,15 +2743,15 @@ class item
       }
     }
 
-    // $this->CS->debug("AlX221", $Config);
-    // $this->CS->debug("AlX222", $Data);
-    // $this->CS->debug("ALX3", $Items);
+    
+    
+    
 
-    // return everything
+    
     if ( $this->CS->display["logs"] ) $this->CS->results["logs"][$this->id] = $this->one["logs"];
 
-    // Normale Reihenfolge der Gruppen (Wiko siehe oben)
-    // Add more groups which are available from marc
+    
+    
     if ( !$this->epn &&  isset($this->CS->configs["other"]["groupsreverse"]) && $this->CS->configs["other"]["groupsreverse"] == 'n' )
     {
       $this->AddMoregroups($Items, $GIdx);
@@ -2770,7 +2770,7 @@ class item
   private function AddMoregroups(&$Items, &$GIdx)
   {
     $MGs = $this->setMoreGroups();
-    // <m.980.b>$this->CS->debug("AlX222", $MGs);
+    
     if ( isset($MGs["searches"]) && is_array($MGs["searches"]) && count($MGs["searches"]) )
     {
       $Items["group_".++$GIdx] = array("label"      => "searches",
@@ -2789,7 +2789,7 @@ class item
     }
   }
 
-  // Pro Gruppe: Zeilen aus ET
+  
   private function getExps(&$Exps, &$ID, &$ScopeCases, &$Item)
   {
     $OldSortLevel  = "";
@@ -2815,17 +2815,17 @@ class item
                                         && $Item["presentationitems"][0]["action"] != "-" ) ? $Item["presentationitems"][0]["action"] : "";
     $Loc  = isset($Item["loc"]) ? $Item["loc"] : "";
 
-    // $this->CS->debug("ALXItem", $this->one);
-    // $this->CS->debug("ALXItem", $Item);
+    
+    
 
     foreach ( $ScopeCases as $SortLevel => $Cases )
     {
       if ( $OldSortLevel != "" && $OldSortLevel != $SortLevel ) continue;
       foreach ( $Cases as $CI => $Case )
       {
-        // if ( !isset($Case["filters"]) || !is_array($Case["filters"]) || !count($Case["filters"]) )  continue;
+        
 
-        // $this->CS->debug("ALX Case ".$SortLevel, $Case);
+        
         if ( !isset($Case["active"]) || !$Case["active"] )  continue;
 
         $this->setLog("Case", "Check " . $SortLevel . "." . $Case["name"]);
@@ -2833,17 +2833,17 @@ class item
         $Match     = true;
         foreach ( $Case["filters"] as $Filter )
         {
-          // Logik: Alle Filter sind VORAB TRUE und müssen durch Prüfung wie folgt beendet werden:
-          //
-          // Filter trifft zu:        break;
-          // Filter trifft nicht zu:  $Match = false; break;
-          //
-          // Hinweis: break nur in Schleifen / Switch - Statements
+          
+          
+          
+          
+          
+          
 
           if ( !$Match )  continue;
           $this->setLog("Filter", "Check " . $Filter);
 
-          // Complex FOLIO filter f.status & f.nostatus
+          
           if ( substr($Filter,0,9) == "f.status." )
           {
             $StatiFound = false;
@@ -2893,24 +2893,24 @@ class item
                   $Match = false;
                 }
               }
-              // if ( !$StorageIDFound )  $Match = false;
+              
             }
             continue;
           }
 
-          // Complex MARC filter m.article
+          
           if ( substr($Filter,0,10) == "m.article." )
           {
             $M7737s = explode(",",substr($Filter,10));
 
-            // $this->CS->debug("ALX1", $M7737s);
-            // $this->CS->debug("ALX2", $Item);
+            
+            
 
             if (  !isset($this->one["artcode"]) || !in_array($this->one["artcode"], $M7737s) )  $Match = false;
             continue;
           }
 
-          // Complex MARC filter m.ali
+          
           elseif ( substr($Filter,0,6) == "m.ali." )
           {
             $Tmp = substr($Filter,6);
@@ -2934,11 +2934,11 @@ class item
             if ( !$ALI || !in_array($ALI, $M980Es) )   $Match = false;
           }
 
-          // Complex MARC filter m.noali - exaktes Gegenteil von m.ali:
-          // trifft zu, solange der ALI des Exemplars NICHT in der Liste steht
-          // (ein leerer ALI steht nicht in der Liste, trifft also zu).
-          // Listenformen wie bei m.ali: "a,b" (Komma), "--%%--" als eigener
-          // Eintrag, sonst zeichenweise. (20.08.2026)
+          
+          
+          
+          
+          
           elseif ( substr($Filter,0,8) == "m.noali." )
           {
             $Tmp = substr($Filter,8);
@@ -2962,37 +2962,37 @@ class item
             if ( $ALI && in_array($ALI, $M980Es) )   $Match = false;
           }
 
-          // Complex MARC filter m.host
+          
           elseif ( substr($Filter,0,7) == "m.host." )
           {
-            // $this->CS->debug("ALXI1", $Item);
+            
             if ( !isset($Item["host"]) )  {$Match = false;  continue; }
 
             if ( !$this->checkStrInWildArr($Item["host"], explode(",", substr($Filter,7))) ) $Match = false;
             continue;
           }
 
-          // Complex MARC filter m.comment
+          
           elseif ( substr($Filter,0,10) == "m.comment." )
           {
-            // $this->CS->debug("ALXI1", $Item);
+            
             if ( !isset($Item["k"][0]) )  {$Match = false;  continue; }
 
             if ( !$this->checkStrInWildArr($Item["k"][0], explode(",", substr($Filter,10))) ) $Match = false;
             continue;
           }
 
-          // Complex MARC filter m.textlink
+          
           elseif ( substr($Filter,0,11) == "m.textlink." )
           {
-            // $this->CS->debug("ALXI1", $Item);
+            
             if ( !isset($Item["text"]) )  {$Match = false;  continue; }
 
             if ( !$this->checkArrInWildArr(explode(", ", $Item["text"]), explode(",", substr($Filter,11))) ) $Match = false;
             continue;
           }
 
-          // Complex MARC filters m.yearolderthan and m.yearyoungerthan
+          
           elseif ( substr($Filter,0,16) == "m.yearolderthan." )
           {
             $Year    = (int) substr($Filter,16);
@@ -3008,7 +3008,7 @@ class item
             continue;
           }
 
-          // Complex MARC filter m.format & m.noformat
+          
           elseif ( substr($Filter,0,9) == "m.format." )
           {
             $Forms    = explode(",", strtolower(substr($Filter,9)));
@@ -3022,7 +3022,7 @@ class item
             continue;
           }
 
-          // Complex MARC filter m.locallinkcomment
+          
           elseif ( substr($Filter,0,19) == "m.locallinkcomment." )
           {
             $LinkCommentFound = false;
@@ -3051,24 +3051,24 @@ class item
             continue;
           }
 
-          // Complex MARC filter m.man & m.noman
+          
           elseif ( substr($Filter,0,6) == "m.man." )
           {
             $M980Ys = explode(",",substr($Filter,6));
 
-            // $this->CS->debug("ALXItem1", $M980Ys);
-            // $this->CS->debug("ALXItem2", $Item);
-            // $this->CS->debug("ALXItem3", $this->one);
+            
+            
+            
 
             if ( count($Item) )
             {
-              // Exemplar
+              
               $Man    = isset($Item["y"][0]) ? substr($Item["y"][0],1) : "";
               if ( !$Man || !in_array($Man, $M980Ys) )   $Match = false;
             }
             else
             {
-              // Media
+              
               $Mans = array();
                if ( isset($this->one["marc"]["M980"]) && is_array($this->one["marc"]["M980"]) )
               {
@@ -3087,13 +3087,13 @@ class item
 
             if ( count($Item) )
             {
-              // Exemplar
+              
               $Man    = isset($Item["y"][0]) ? substr($Item["y"][0],1) : "";
               if ( $this->checkStrInWildArr($Man, $M980Ys) )  $Match = false;
             }
             else
             {
-              // Media
+              
               $Mans = array();
                if ( isset($this->one["marc"]["M980"]) && is_array($this->one["marc"]["M980"]) )
               {
@@ -3107,24 +3107,24 @@ class item
             continue;
           }
 
-          // Complex MARC filter m.iln & m.noiln
+          
           elseif ( substr($Filter,0,6) == "m.iln." )
           {
             $M9802s = explode(",",substr($Filter,6));
 
-            // $this->CS->debug("ALX1", $M9802s);
-            // $this->CS->debug("ALX2", $Item);
+            
+            
 
             if ( count($Item) )
             {
-              // Exemplar
+              
               $ILN    = isset($Item["iln"]) ? $Item["iln"] : "";
               if ( !$ILN && isset($Item["2"]["0"]) )  $ILN = $Item["2"]["0"];
               if ( !$ILN || !in_array($ILN, $M9802s) )   $Match = false;
             }
             else
             {
-              // Media
+              
               $ILNs = array();
                if ( isset($this->one["marc"]["M980"]) && is_array($this->one["marc"]["M980"]) )
               {
@@ -3141,19 +3141,19 @@ class item
           {
             $M9802s = explode(",",substr($Filter,8));
 
-            // $this->CS->debug("ALX", $M9802s);
-            // $this->CS->debug("ALX", $ILN);
+            
+            
 
             if ( count($Item) )
             {
-              // Exemplar
+              
               $ILN    = isset($Item["iln"]) ? $Item["iln"] : "";
               if ( !$ILN && isset($Item["2"]["0"]) )  $ILN = $Item["2"]["0"];
               if ( $ILN && in_array($ILN, $M9802s) )   $Match = false;
             }
             else
             {
-              // Media
+              
               $ILNs = array();
                if ( isset($this->one["marc"]["M980"]) && is_array($this->one["marc"]["M980"]) )
               {
@@ -3167,19 +3167,19 @@ class item
             continue;
           }
 
-          // Complex MARC filter m.eln & m.noeln
+          
           elseif ( substr($Filter,0,6) == "m.eln." )
           {
             $M980Xs = explode(",",substr($Filter,6));
             if ( count($Item) )
             {
-              // Exemplar
+              
               $ELN    = isset($Item["x"][0]) ? $Item["x"][0] : "";
               if ( !$ELN || !in_array($ELN, $M980Xs) )   $Match = false;
             }
             else
             {
-              // Media
+              
               $ELNs = array();
                if ( isset($this->one["marc"]["M980"]) && is_array($this->one["marc"]["M980"]) )
               {
@@ -3197,13 +3197,13 @@ class item
             $M980Xs = explode(",",substr($Filter,8));
             if ( count($Item) )
             {
-              // Exemplar
+              
               $ELN    = isset($Item["x"][0]) ? $Item["x"][0] : "";
               if ( $ELN && in_array($ELN, $M980Xs) )   $Match = false;
             }
             else
             {
-              // Media
+              
               $ELNs = array();
                if ( isset($this->one["marc"]["M980"]) && is_array($this->one["marc"]["M980"]) )
               {
@@ -3218,22 +3218,22 @@ class item
           }
 
 
-          // Complex MARC filter m.manfull & m.nomanfull
+          
           elseif ( substr($Filter,0,10) == "m.manfull." )
           {
             $M980Ys = explode(",",substr($Filter,10));
 
-            // $this->CS->debug("ALX", $M980Ys);
-            // $this->CS->debug("ALX", $Man);
+            
+            
             if ( count($Item) )
             {
-              // Exemplar
+              
               $Man    = isset($Item["y"][0]) ? $Item["y"][0] : "";
               if ( !$Man || !in_array($Man, $M980Ys) )   $Match = false;
             }
             else
             {
-              // Media
+              
               $Mans = array();
                if ( isset($this->one["marc"]["M980"]) && is_array($this->one["marc"]["M980"]) )
               {
@@ -3251,13 +3251,13 @@ class item
             $M980Ys = explode(",",substr($Filter,12));
             if ( count($Item) )
             {
-              // Exemplar
+              
               $Man    = isset($Item["y"][0]) ? $Item["y"][0] : "";
               if ( $Man && in_array($Man, $M980Ys) )   $Match = false;
             }
             else
             {
-              // Media
+              
               $Mans = array();
                if ( isset($this->one["marc"]["M980"]) && is_array($this->one["marc"]["M980"]) )
               {
@@ -3271,12 +3271,12 @@ class item
              continue;
           }
 
-          // Complex OTHER filter o.sig & o.nosig
+          
           elseif ( substr($Filter,0,6) == "o.sig." )
           {
-            // $this->CS->debug("ALXI1", $Item);
-            // $this->CS->debug("ALXI2", $Case);
-            // $this->CS->debug("ALXI3", $this->one["locs"]);
+            
+            
+            
 
             if ( !isset($Item["d"][0]) )  {$Match = false;  continue; }
 
@@ -3291,10 +3291,10 @@ class item
             continue;
           }
 
-          // Complex OTHER filter o.col
+          
           elseif ( substr($Filter,0,6) == "o.col." )
           {
-            // Kind
+            
             $OneCols  = ( isset($this->one["collections"]) && is_array($this->one["collections"]) ) ? $this->one["collections"] : array();
             $Cols     = explode(",", substr($Filter,6));
             $ColFound = false;
@@ -3304,11 +3304,11 @@ class item
               if ( $ColFound) continue;
             }
             
-            // Mama
+            
             if ( $this->aps && $this->isHapticArticle() )
             {
               $Mama = "";
-              // $this->CS->debug("ALX40", $this->CS->hierarchy);
+              
               if ( array_key_exists($this->id,$this->CS->hierarchy["childs"]) ) {
                 $Mama = $this->CS->hierarchy["childs"][$this->id];
                 $OneCols  = ( isset($this->CS->works["add"][$Mama]["collections"]) && is_array($this->CS->works["add"][$Mama]["collections"]) ) ? $this->CS->works["add"][$Mama]["collections"] : array();
@@ -3321,19 +3321,19 @@ class item
               }
             }
 
-            // Final
+            
             if ( !$ColFound )  $Match = false;
             continue;
           }
 
-          // Complex OTHER filter o.loc & o.noloc
+          
           elseif ( substr($Filter,0,6) == "o.loc." )
           {
             if ( !isset($Item["f"][0]) )  {$Match = false;  continue; }
 
-            // $this->CS->debug("ALXI1", $Item["f"][0]);
-            // $this->CS->debug("ALXI2", explode(",", substr($Filter,6)));
-            // $this->CS->debug("ALXI3", !$this->checkStrInWildArr($Item["f"][0], explode(",", substr($Filter,6))) );
+            
+            
+            
 
             if ( !$this->checkStrInWildArr($Item["f"][0], explode(",", substr($Filter,6))) ) $Match = false;
             continue;
@@ -3346,12 +3346,12 @@ class item
             continue;
           }
 
-          // Complex OTHER filter o.locid & o.nolocid
+          
           elseif ( substr($Filter,0,8) == "o.locid." )
           {
-            // $this->CS->debug("ALXI1", $Loc);
-            // $this->CS->debug("ALXI2", $Case);
-            // $this->CS->debug("ALXI3", $this->one["locs"]);
+            
+            
+            
 
             if ( !$Loc )  {$Match = false;  continue; }
 
@@ -3366,12 +3366,12 @@ class item
             continue;
           }
 
-          // Complex OTHER filter o.allloc & o.allnoloc
+          
           elseif ( substr($Filter,0,9) == "o.allloc." )
           {
-            // $this->CS->debug("ALXI1", $this->one);
-            // $this->CS->debug("ALXI2", explode(",", substr($Filter,11)));
-            // $this->CS->debug("ALXALLLOC", $Locs);
+            
+            
+            
 
             $Locs = array();
             if ( isset($this->one["marc"]["M980"]) && is_array($this->one["marc"]["M980"]) )
@@ -3384,7 +3384,7 @@ class item
             if ( !$this->awop && !$Locs && isset($this->CS->works["marc"][$ID]["marc"]["M980"])
             && is_array($this->CS->works["marc"][$ID]["marc"]["M980"]) && count($this->CS->works["marc"][$ID]["marc"]["M980"]) )
             {
-              // $this->CS->debug("PITem",  $this->CS->works["marc"][$ID] );
+              
               foreach ( $this->CS->works["marc"][$ID]["marc"]["M980"] as $Rec )
               {
                 if ( isset($Rec["f"][0]) )  $Locs[] = $Rec["f"][0];
@@ -3407,8 +3407,8 @@ class item
               }
             }
 
-            // $this->CS->debug("ALXI1", $Locs);
-            // $this->CS->debug("ALXI2", array_map(array($this,"replacekeywords"), explode(",", substr($Filter,11))));
+            
+            
 
             if ( !count($Locs) )  { continue; }
 
@@ -3417,7 +3417,7 @@ class item
             continue;
           }
 
-          // Complex OTHER filter o.allotherloc
+          
           elseif ( substr($Filter,0,14) == "o.allotherloc." )
           {
             $Locs = array();
@@ -3438,11 +3438,11 @@ class item
             continue;
           }
 
-          // Complex OTHER filter o.alllocid & o.allnolocid
+          
           elseif ( substr($Filter,0,11) == "o.alllocid." )
           {
-            // $this->CS->debug("ALXI1", $this->one["locs"]);
-            // $this->CS->debug("ALXI2", explode(",", substr($Filter,11)));
+            
+            
 
             if ( !is_array($this->one["locs"]) || !count($this->one["locs"]) )  { $Match = false;  continue; }
 
@@ -3457,7 +3457,7 @@ class item
             continue;
           }
 
-          // Complex OTHER filter o.otherlocid
+          
           elseif ( substr($Filter,0,13) == "o.otherlocid." )
           {
             $Other = explode(",", substr($Filter,13));
@@ -3469,7 +3469,7 @@ class item
             continue;
           }
 
-          // Complex OTHER filter o.noetnr
+          
           elseif ( substr($Filter,0,9) == "o.noetnr." )
           {
             if ( !is_array($this->casesetnr) || !count($this->casesetnr) )   { continue; }
@@ -3482,36 +3482,36 @@ class item
             continue;
           }
 
-          // Complex OTHER filter o.otheretnr
+          
           elseif ( substr($Filter,0,12) == "o.otheretnr." )
           {
             if ( !is_array($this->casesetnr) || !count($this->casesetnr) )   { continue; }
 
             $Others = explode(",", substr($Filter,12));
-            // $this->CS->debug("ALXl33", $Others);
-            // $this->CS->debug("ALXl34", $this->casesetnr);
+            
+            
             if ( count($Others) )
             {
               $Rest = $this->getArrReducedWildArr($Others, array_keys($this->casesetnr));
-              // $this->CS->debug("ALXl35", $Rest);
+              
               if ( !count($Rest) )  $Match = false;
             }
             continue;
           }
 
-          // Complex OTHER filter o.level
+          
           elseif ( substr($Filter,0,8) == "o.level." )
           {
             $Level = (isset($this->CS->posted["search"]["userlevel"]) && trim($this->CS->posted["search"]["userlevel"]))
                      ? trim($this->CS->posted["search"]["userlevel"])
                      : "";
-            // $this->CS->debug("ALXl33", $Level);
+            
 
             if ( !$this->checkArrInWildArr(array($Level), explode(",", substr($Filter,8))) ) $Match = false;
             continue;
           }
 
-          // Complex OTHER filter o.ownorg
+          
           elseif ( substr($Filter,0,9) == "o.ownorg." )
           {
             $OwnOrg = ( isset($this->one["ownorg"]) && trim($this->one["ownorg"]) ) ? trim($this->one["ownorg"]) : "";
@@ -3533,7 +3533,7 @@ class item
             if ( !$M535AFound )  $Match = false;
             continue;
           }
-          // Complex OTHER filter o.ipspecial
+          
           elseif ( substr($Filter,0,12) == "o.ipspecial.")
           {
             $IPs = explode(",", substr($Filter,12));
@@ -3554,7 +3554,7 @@ class item
             break;
           }
 
-          // Complex PAIA filter p.storage & p.nostorage
+          
           elseif ( substr($Filter,0,10) == "p.storage." )
           {
             if ( !isset($Item["storage"]) )
@@ -3605,12 +3605,12 @@ class item
                   continue;
                 }
               }
-              // if ( !$StorageFound )  $Match = false;
+              
             }
             continue;
           }
 
-          // Complex PAIA filter p.storageid & p.nostorageid
+          
           elseif ( substr($Filter,0,12) == "p.storageid." )
           {
             $StorageIDFound = false;
@@ -3638,7 +3638,7 @@ class item
             }
             continue;
           }
-          // Complex filter
+          
           elseif ( substr($Filter,0,14) == "p.nostorageid." )
           {
             if ( isset($Item["storageid"]) )
@@ -3661,12 +3661,12 @@ class item
                   $Match = false;
                 }
               }
-              // if ( !$StorageIDFound )  $Match = false;
+              
             }
             continue;
           }
 
-          // Complex PAIA filter p.departmentid & p.nodepartmentid
+          
           elseif ( substr($Filter,0,15) == "p.departmentid." )
           {
             $DepartmentIDFound = false;
@@ -3694,7 +3694,7 @@ class item
             }
             continue;
           }
-          // Complex filter
+          
           elseif ( substr($Filter,0,17) == "p.nodepartmentid." )
           {
             if ( isset($Item["departmentid"]) )
@@ -3717,17 +3717,17 @@ class item
                   $Match = false;
                 }
               }
-              // if ( !$StorageIDFound )  $Match = false;
+              
             }
             continue;
           }
 
-          // Simple filters
+          
           else
           {
             switch ( $Filter )
             {
-              // MARC filters
+              
               case "m.articles":
               {
                 if ( !isset($this->one["artcode"]) || $this->one["artcode"] != "nnam" )  $Match = false;
@@ -3791,15 +3791,15 @@ class item
               }
               case "m.notowner":
               {
-                // Prueft NUR den eigenen (Kind-)Besitz. Der Elternteil wird
-                // bewusst NICHT herangezogen: bei aktivem articleparentshift
-                // darf der Zugriff auf die Eltern nicht ueber notowner zurueck-
-                // kommen (sonst faellt der Satz faelschlich auf 900.Ende statt
-                // z.B. 800.5a Fernleihe). ErfurtUB, 20.08.2026.
+                
+                
+                
+                
+                
                 $NotOwner    = true;
                 if ( isset($this->one["owner"]) && $this->one["owner"] )  $NotOwner = false;
 
-                // Final
+                
                 if ( !$NotOwner )  $Match = false;
                 break;
               }
@@ -3810,8 +3810,8 @@ class item
               }
               case "m.owncollection":
               {
-                // $this->CS->debug("ALXCOLL", $this->CS->configs["mycolls"]);
-                // $this->CS->debug("ALXCOLL", $this->one);
+                
+                
                 if ( !isset($this->one["owncollection"]) || !$this->one["owncollection"] )  $Match = false;
                 break ;
               }
@@ -3824,13 +3824,13 @@ class item
               }
               case "m.owner":
               {
-                // Kind
+                
                 $Owner    = true;
                 if ( !isset($this->one["owner"]) || !$this->one["owner"] )  $Owner = false;
 
                 if ( $this->aps && $this->isHapticArticle() )
                 {
-                  // Mama
+                  
                   $Mama = "";
                   if ( array_key_exists($this->id,$this->CS->hierarchy["childs"]) ) {
                     $Mama = $this->CS->hierarchy["childs"][$this->id];
@@ -3838,7 +3838,7 @@ class item
                   }
                 }
                 
-                // Final
+                
                 if ( !$Owner )  $Match = false;
                 break;
               }
@@ -3863,12 +3863,12 @@ class item
                 if ( $this->epn )    $Match = false;
                 break;
               }
-              case "m.physical": // M980 (NoLink)
+              case "m.physical": 
               {
                 if ( isset($Item["link"]) && trim($Item["link"]) ) $Match = false;
                 break;
               }
-              case "m.remote":  // Only M856 (Link, No ILN)
+              case "m.remote":  
               case "m.globallink":
               {
                 if ( !isset($Item["link"])
@@ -3886,9 +3886,9 @@ class item
               }
               case "m.nolocallink":
               {
-                // Gegenteil von m.locallink: stellt sicher, dass das M981
-                // KEINEN (lokalen) Link trägt - trifft nicht zu, sobald es
-                // einen Link mit ILN gibt (19.08.2026).
+                
+                
+                
                 if ( isset($Item["link"]) && $Item["link"]
                   && isset($Item["iln"])  && $Item["iln"] )        $Match = false;
                 break;
@@ -3917,7 +3917,7 @@ class item
                  break;
               }
 
-              // PAIA filters
+              
               case "p.action":
               {
                 if ( ( !isset($Item["loanitems"][0])         || !count($Item["loanitems"][0])         || $Item["loanitems"][0]["action"]         == "-" )
@@ -3960,7 +3960,7 @@ class item
                        }
                      }
                    }
-                   // $this->CS->debug("ALXBLY", $this->CS->paias[$this->id]);
+                   
                 }
                 break;
               }
@@ -3998,7 +3998,7 @@ class item
                 }
                 else
                  {
-                   // At least one item should habe a bandlist
+                   
                    if ( isset($this->CS->paias[$this->id]) && is_array($this->CS->paias[$this->id]) && count($this->CS->paias[$this->id]) )
                    {
                      $Tmp = true;
@@ -4027,8 +4027,8 @@ class item
               }
               case "p.nopaia":
               {
-                // Siehe hasPaia(): auf der Medienebene gibt es kein Exemplar
-                // und damit kein $DAIA - dort entscheidet der Satz.
+                
+                
                 if ( $this->hasPaia($Item) )  $Match = false;
                 break;
               }
@@ -4044,8 +4044,8 @@ class item
               }
               case "p.paia":
               {
-                // Siehe hasPaia(): auf der Medienebene gibt es kein Exemplar
-                // und damit kein $DAIA - dort entscheidet der Satz.
+                
+                
                 if ( !$this->hasPaia($Item) )  $Match = false;
                 break;
               }
@@ -4080,7 +4080,7 @@ class item
                 break;
               }
 
-              // Other filters
+              
               case "o.ip":
               {
                 if ( !isset($this->CS->configs["init"]["ipranges"]) || !trim($this->CS->configs["init"]["ipranges"]) )    $Match = false;
@@ -4113,46 +4113,46 @@ class item
               }
               case "o.rostockub.emailcld":
               {
-                // $this->CS->debug("ALXROS1", $Item);
+                
 
-                // Determine params
+                
                 $Params = array("iln"     => "62",
                                 "format"  => "json");
                 if ( isset($Item["d"][0]) && trim($Item["d"][0]) )  $Params["sgn"] = trim($Item["d"][0]);
                 if ( isset($Item["e"][0]) && trim($Item["e"][0]) )  $Params["aui"] = trim($Item["e"][0]);
                 if ( isset($Item["f"][0]) && trim($Item["f"][0]) )  $Params["sst"] = trim($Item["f"][0]);
 
-                // $this->CS->debug("ALXROS2", $Params);
+                
 
-                // Item sstmaps
+                
                 $File = $this->CS->prepareCachePath(array("sstmap"), preg_replace("/[^a-zA-Z0-9]+/", "", implode("", $Params)));
                 if ( file_exists($File) )
                 {
                   $AddInfos = json_decode(file_get_contents($File),true);
-                  // if ( isset($AddInfos["item"]["emailcld"]) ) $this->CS->debug("ALXROS3", $AddInfos["item"]);
+                  
                 }
                 if ( !file_exists($File) || !isset($AddInfos["item"]["emailcld"]) || !trim($AddInfos["item"]["emailcld"]) ) $Match = false;
                 break;
               }
               case "o.rostockub.emailscd":
               {
-                // $this->CS->debug("ALXROS1", $Item);
+                
 
-                // Determine params  (Sequence is IMPORTANT for caching)
+                
                 $Params = array("iln"     => "62",
                                 "format"  => "json");
                 if ( isset($Item["f"][0]) && trim($Item["f"][0]) )  $Params["sst"] = trim($Item["f"][0]);
                 if ( isset($Item["d"][0]) && trim($Item["d"][0]) )  $Params["sgn"] = trim($Item["d"][0]);
                 if ( isset($Item["e"][0]) && trim($Item["e"][0]) )  $Params["aui"] = trim($Item["e"][0]);
 
-                // $this->CS->debug("ALXROS2", $Params);
+                
 
-                // Item sstmaps
+                
                 $File = $this->CS->prepareCachePath(array("sstmap"), preg_replace("/[^a-zA-Z0-9]+/", "", implode("", $Params)));
                 if ( file_exists($File) )
                 {
                   $AddInfos = json_decode(file_get_contents($File),true);
-                  // if ( isset($AddInfos["item"]) ) $this->CS->debug("ALXROS3", $AddInfos["item"]);
+                  
                 }
                 if ( !file_exists($File) || !isset($AddInfos["item"]["emailscd"]) || !trim($AddInfos["item"]["emailscd"]) ) $Match = false;
                 break;
@@ -4186,41 +4186,41 @@ class item
 
     while ( count($Hits) > 0 )
     {
-      // Process every ET line
+      
       $Exemplar = array();
       $Hit      = array_shift($Hits);
       $Case     = (isset($ScopeCases[$Hit["SL"]][$Hit["CI"]])) ? $ScopeCases[$Hit["SL"]][$Hit["CI"]] : array();
 
-      // Action
+      
       $Exemplar["action"] = $this->getActionElements($Case, $Item);
 
       if ( isset($Exemplar["action"]["type"]) && $Exemplar["action"]["type"] == "skip" )  continue;
 
-      // Serverseitige Textaufloesung (19.08.2026): der Knopf-Text ("button")
-      // ist ein Textschluessel; ihn hier zur fertigen Beschriftung der
-      // angeforderten Sprache aufloesen, damit der Client nicht mehr selbst
-      // ueber config.t() gehen muss (Ziel: Texte nur noch auf dem Server).
+      
+      
+      
+      
       if ( isset($Exemplar["action"]["button"]) && trim($Exemplar["action"]["button"]) !== "" )
         $Exemplar["action"]["label"] = $this->CS->getText($Exemplar["action"]["button"]);
 
-      // $Exemplar += $this->setMeta($Item, $Hit, $Case, $Loc);       VORBEREITUNG !!!!
+      
 
-       // Short
+       
       if ( isset($Case["itembutton"]) )       $Exemplar["short"]  = array("code"  => $Case["itembutton"],
                                                                           "label" => $this->CS->getText($Case["itembutton"]),
                                                                           "icon"  => $Case["itemicon"],
                                                                           "color" => $Case["light"]);
 
 
-      // Comments
+      
       if ( isset($Case["itemcomments"]) && is_array($Case["itemcomments"]) && count($Case["itemcomments"]) )
       {
         $Exemplar["comments"] = $this->getDisplayElements($Case["itemcomments"], $Item);
-        // $this->CS->debug("AÖX111", $Exemplar["comments"]);
+        
       }
       else
       {
-        // Wichtig damit nicht über unteren Teil (Loc) die Standort-Schnittstellen Daten laufend über mehrere Exemplare ergänzt werden
+        
         $Exemplar["comments"] = array("g" => array(),
                                       "e" => array());
       }
@@ -4231,9 +4231,9 @@ class item
         $Exemplar["comments"]["e"] = [...$Exemplar["comments"]["e"],
                                       ...[["type" => "text", "text" => $Exemplar["action"][0]["link"]["label"]]]];
       }
-      // $this->CS->debug("AÖX222", $Exemplar["comments"]);
+      
 
-      // Detailinfos
+      
       if ( isset($Case["detailinfos"]) && is_array($Case["detailinfos"]) && count($Case["detailinfos"]) )
       {
         if ( !$this->epn )
@@ -4246,7 +4246,7 @@ class item
         }
       }
 
-      // Meta
+      
       $Exemplar["meta"]              = array("case"       => $Hit["SL"] . "." .  $Case["name"],
                                              "window"     => $Case["detailwindow"] == 'y' ? true : false,
                                              "locid"      => $Loc,
@@ -4261,9 +4261,9 @@ class item
 
       if ( isset($this->CS->configs["other"]["delivery.type"]) && $this->CS->configs["other"]["delivery.type"] == "mail" )
       {
-        // ALEX ROSTOCK
-         // $this->CS->debug("ALEXLOCIF", $Loc);
-         // meta oberhalb mit to - Mailadresse und - falls nicht - vorhanden - UserTypen ergänzen.
+        
+         
+         
       }
 
 
@@ -4289,14 +4289,14 @@ class item
         $Exemplar["meta"]["dialog"] = "default";
       }
 
-      // Preparation
+      
       if ( !isset($Exemplar["view"]) )  $Exemplar["view"] = array("g" => array(),
                                                                   "e" => array());
       if ( !isset($Exemplar["view"]["g"]) ) $Exemplar["view"]["g"] = array();
       if ( !isset($Exemplar["view"]["e"]) ) $Exemplar["view"]["e"] = array();
 
 
-      // Add comments from location interface
+      
       if ( count($Item) && isset($this->CS->locations["comment"][$Loc]) )
       {
         if ( isset($this->CS->locations["comment"][$Loc]["g"]) && is_array($this->CS->locations["comment"][$Loc]["g"])
@@ -4312,7 +4312,7 @@ class item
                                         ...$this->CS->locations["comment"][$Loc]["e"]];
         }
 
-        // $this->CS->debug("AÖX444", $Exemplar["comments"]);
+        
 
         foreach ($Exemplar["comments"]["g"] as &$v)
         {
@@ -4328,11 +4328,11 @@ class item
             $v["link"] = $this->repairLink($v["link"], $Item);
           }
         }
-        // $this->CS->debug("ALX25",$Exemplar["view"]["g"]);
+        
       }
-      // $this->CS->debug("AÖX555", $Exemplar["comments"]);
+      
 
-      // Add detailsinfos from location interface
+      
       if ( count($Item) && isset($this->CS->locations["view"][$Loc]) )
       {
         if ( !isset($this->CS->locations["view"][$Loc]["g"]) )  $this->CS->locations["view"][$Loc]["g"] = array();
@@ -4356,7 +4356,7 @@ class item
                                 "3080" => "bbb",
                                 "4080" => "10frh");
                 if ( array_key_exists($Fill, $Switch) )  $Fill = $Switch[$Fill];
-                // $this->CS->debug("ALXJE", $Fill);
+                
               }
               $v["link"] = str_ireplace("<M980.d>", urlencode($Fill), $v["link"]);
             }
@@ -4394,20 +4394,20 @@ class item
         }
       }
 
-      // Desk & Users
-      // $this->CS->debug("ALX32", $Item);
+      
+      
 
-      // Get users based on m980 (location, signature,...)
+      
       if ( count($Item) )
       {
         $DesksUsers = $this->addDeskUsers($Loc, $Item, $Exemplar);
 
-        // Thekenwahl: die Theken-IDs kommen jetzt schon als {value,label} in
-        // der angeforderten Sprache zurueck (19.08.2026). Im Altmodul loeste
-        // der Client "location.desk.<id>" selbst ueber getText() auf - der
-        // neue Grundsatz ist "Texte nur auf dem Server". Der zugehoerige
-        // Aufforderungstext ("Bitte waehlen Sie eine Abholtheke") reist als
-        // "deskprompt" mit, damit auch er nicht mehr im Client stehen muss.
+        
+        
+        
+        
+        
+        
         $RawDesks = isset($DesksUsers["desks"]) ? $DesksUsers["desks"] : array();
         $Exemplar["desks"] = array();
         foreach ( $RawDesks as $DID )
@@ -4423,16 +4423,16 @@ class item
         }
       }
 
-      // Get users from default
-      //
-      // Der Lieferdienst heisst in API 5 nicht mehr "delivery": er laeuft seit
-      // dem 19.08.2026 ueber den generischen Dialog ("type" => "dialog",
-      // "dialog" => "delivery" bzw. "delivery2" bei GreifswaldUB). Die Abfrage
-      // stand aber weiter auf dem ALTEN Namen und traf damit nie zu - "users"
-      // blieb leer, und mit ihm fiel die Beschraenkung auf bestimmte
-      // Benutzergruppen (item.delivery.usertypes) still weg (09.09.2026,
-      // gemeldet an WeimarBU 1880554291). Beide Schreibweisen werden erkannt,
-      // damit der alte Name nicht extra abgeloest werden muss.
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       $ActType = isset($Exemplar["action"]["type"])   ? $Exemplar["action"]["type"]   : "";
       $ActDlg  = isset($Exemplar["action"]["dialog"]) ? $Exemplar["action"]["dialog"] : "";
       if ( ( !isset($Exemplar["users"]) || !count($Exemplar["users"]) )
@@ -4443,10 +4443,10 @@ class item
        $Exemplar["users"] = explode(",", $this->CS->configs["item"]["delivery.usertypes"]);
       }
 
-      // Local Infos
+      
       $this->getItemDataLocal($Item, $Exemplar);
 
-      // Light
+      
       $Exemplar["light"] = (isset($Case["light"]) && $Case["light"]) ? $Case["light"] : "red";
       $Blue2Green        = (isset($this->CS->configs["item"]["statusblueasgreen"]) && $this->CS->configs["item"]["statusblueasgreen"] == "y") ? true : false;
       if ( in_array($this->best, array("red"))                   && in_array($this->normLight($Exemplar["light"]), $this->lightsblue) )   $this->best = $Blue2Green ? "green" : "blue";
@@ -4517,21 +4517,21 @@ class item
     return $RTRN;
   }
 
-  // *******************************************************************
-  // ************* P R O T E C T E D ***********************************
-  // *******************************************************************
+  
+  
+  
 
 
-  // *******************************************************************
-  // ************* P U B L I C *****************************************
-  // *******************************************************************
+  
+  
+  
   public function getItems($ID, $EPN = "")
   {
     if ( APPDEBUG["FKT"] ) $this->CS->debug("FKT",__METHOD__);
 
-    // $this->CS->debug("ALXITEM", $ID);
-    // $this->CS->debug("ALXITEM", $this->CS->configs);
-    // $this->CS->debug("ALXITEM", $this->CS->works["marc"][$ID]);
+    
+    
+    
 
     $this->id        = $ID;
     $this->epn       = $EPN;
@@ -4543,19 +4543,19 @@ class item
     $this->signature = array();
     $this->stock     = array();
 
-    // Searches and Links from marc
-    // if ( !$this->epn ) $this->setMoreGroups();
+    
+    
 
-    // Groups
+    
     $this->setCombs();
 
-    // Items
+    
     return $this->setItems();
   }
 
-  // **********************************************************************
-  // ************* A R E A  5 1 *******************************************
-  // **********************************************************************
+  
+  
+  
 }
 
 ?>

@@ -2,9 +2,9 @@
 
 namespace PhpXmlRpc\Exception;
 
-/**
- * To be used for all errors related to parsing HTTP requests and responses
- */
+
+
+
 class HttpException extends TransportException
 {
     protected $statusCode;

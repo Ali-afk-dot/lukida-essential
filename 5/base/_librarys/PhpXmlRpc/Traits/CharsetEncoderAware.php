@@ -16,10 +16,10 @@ trait CharsetEncoderAware
         return self::$charsetEncoder;
     }
 
-    /**
-     * @param $charsetEncoder
-     * @return void
-     */
+    
+
+
+
     public static function setCharsetEncoder($charsetEncoder)
     {
         self::$charsetEncoder = $charsetEncoder;

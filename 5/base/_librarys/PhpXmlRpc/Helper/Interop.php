@@ -2,17 +2,17 @@
 
 namespace PhpXmlRpc\Helper;
 
-/**
- * A helper dedicated to support Interoperability features
- */
+
+
+
 class Interop
 {
-    /// @todo review - should we use the range -32099 .. -32000 for some server erors?
+    
     public static $xmlrpcerr = array(
         'unknown_method' => -32601,
         'invalid_return' => 2,
         'incorrect_params' => -32602,
-        'introspect_unknown' => -32601, // this shares the same code but has a separate meaning from 'unknown_method'...
+        'introspect_unknown' => -32601, 
         'http_error' => -32300,
         'no_data' => -32700,
         'no_ssl' => -32400,
