@@ -167,6 +167,28 @@ Alternativ über **Adminer**:
    Passwort = `<passwort>`, Datenbank = lukida_essential
 2. SQL-Dateien nacheinander über „SQL-Befehl ausführen" einspielen
 
+### 5.3 Zugänge und Platzhalter
+
+Vor dem Einspielen von `demo-data.sql` müssen folgende Platzhalter in der Datei
+mit echten Werten ersetzt werden:
+
+| Platzhalter | Bedeutung | Woher |
+|---|---|---|
+| `<solr-host>` | Solr-Server-Hostname | Bei GBV beantragen |
+| `<solr-path>` | Solr-Suchpfad | Bei GBV beantragen |
+| `<iln>` | Interne Bibliotheksnummer (ILN) | Eigene Bibliothek / GBV |
+| `<gbv-iln>` | ILN im GBV-Format, z. B. `GBV_ILN_123` | Eigene Bibliothek / GBV |
+| `<isil>` | ISIL der Bibliothek, z. B. `DE-7` | Eigene Bibliothek |
+| `<paia-test-url>` | URL des PAIA-Testsystems | Eigene Bibliothek |
+| `<paia-prod-url>` | URL des PAIA-Produktivsystems | Eigene Bibliothek |
+| `<paia-test-host>` | Hostname PAIA-Test (ohne `https://`) | Eigene Bibliothek |
+| `<paia-prod-host>` | Hostname PAIA-Prod (ohne `https://`) | Eigene Bibliothek |
+| `<testuser>` | Testnutzer-Ausweisnummer | Eigene Bibliothek |
+| `<testpass>` | Testnutzer-Passwort | Eigene Bibliothek |
+
+Den Solr-Zugang (Host + Pfad) stellt GBV auf Anfrage bereit.
+PAIA-Zugangsdaten erhältst du von deinem lokalen Bibliothekssystem.
+
 ---
 
 ## 6. Vue-UI bauen
