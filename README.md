@@ -1,6 +1,6 @@
 # Lukida Essential — Installationsanleitung
 
-> Getestet auf esx-32.gbv.de (Debian/Ubuntu, Apache 2.4, PHP 8.4, PostgreSQL 16)  
+> Getestet auf (Debian/Ubuntu, Apache 2.4, PHP 8.4, PostgreSQL 16)  
 > Stand: Oktober 2026
 
 Lukida Essential ist die kostenlose Open-Source-Version von Lukida Pro. Folgende Features sind nur in der Pro-Version enthalten:
