@@ -1,4 +1,4 @@
-# Lukida Essential — Installationsanleitung
+# Lukida Essential � Installationsanleitung
 
 > Getestet auf esx-32.gbv.de (Debian/Ubuntu, Apache 2.4, PHP 8.4, PostgreSQL 16)  
 > Stand: Oktober 2026
@@ -17,7 +17,7 @@ Lukida Essential ist die kostenlose Open-Source-Version von Lukida Pro. Folgende
 
 ---
 
-> **Hinweis zu Pfaden:** Alle Pfade mit `/home/<benutzer>/` sind Beispiele und müssen durch den tatsächlichen Benutzerpfad ersetzt werden (z. B. `/home/ali/` oder `/var/www/`). Entscheidend ist nur die **relative Struktur**: `configs/` muss immer eine Ebene **über** dem Repo-Verzeichnis liegen.
+> **Hinweis zu Pfaden:** Alle Pfade mit `/home/<benutzer>/` sind Beispiele und m�ssen durch den tats�chlichen Benutzerpfad ersetzt werden (z. B. `/home/ali/` oder `/var/www/`). Entscheidend ist nur die **relative Struktur**: `configs/` muss immer eine Ebene **�ber** dem Repo-Verzeichnis liegen.
 
 ---
 
@@ -28,7 +28,7 @@ Lukida Essential ist die kostenlose Open-Source-Version von Lukida Pro. Folgende
 | PHP | 8.4 |
 | PostgreSQL | 16 |
 | Apache | 2.4 (mit mod_rewrite, mod_proxy, mod_proxy_http) |
-| Node.js | 20+ (nur für UI-Build) |
+| Node.js | 20+ (nur f�r UI-Build) |
 | Git | beliebig |
 
 ---
@@ -40,10 +40,10 @@ cd /home/<benutzer>
 git clone https://github.com/Ali-afk-dot/lukida-essential lukida-essential
 ```
 
-**Wichtig — Verzeichnisstruktur:** `main.php` sucht Konfigurationsdateien immer
-im Ordner `configs/` **eine Ebene über** dem Repo. Liegt das Repo in
+**Wichtig � Verzeichnisstruktur:** `main.php` sucht Konfigurationsdateien immer
+im Ordner `configs/` **eine Ebene �ber** dem Repo. Liegt das Repo in
 `/home/<benutzer>/lukida-essential/`, muss der Configs-Ordner in `/home/<benutzer>/configs/`
-liegen — der Name `configs` ist fest vorgegeben.
+liegen � der Name `configs` ist fest vorgegeben.
 
 ---
 
@@ -123,7 +123,7 @@ sqd=true
 
 ## 4. Logs- und Caches-Verzeichnisse anlegen
 
-Die API schreibt Logs und Caches in den `configs/`-Ordner. Apache läuft als
+Die API schreibt Logs und Caches in den `configs/`-Ordner. Apache l�uft als
 `www-data` und braucht Schreibrechte:
 
 ```bash
@@ -152,8 +152,8 @@ CREATE DATABASE lukida_essential OWNER lukida_essential;
 ### 5.2 Schema und Demo-Daten einspielen
 
 Die SQL-Dateien liegen im Repo unter `lukida-essential/sql/`:
-- `schema.sql` — erstellt alle Tabellen
-- `demo-data.sql` — füllt die DB mit Testdaten
+- `schema.sql` � erstellt alle Tabellen
+- `demo-data.sql` � f�llt die DB mit Testdaten
 
 ```bash
 psql -h localhost -U lukida_essential -d lukida_essential \
@@ -162,10 +162,10 @@ psql -h localhost -U lukida_essential -d lukida_essential \
   -f /home/<benutzer>/lukida-essential/sql/demo-data.sql
 ```
 
-Alternativ über **Adminer**:
+Alternativ �ber **Adminer**:
 1. Einloggen: System = PostgreSQL, Server = localhost, User = lukida_essential,
    Passwort = `<passwort>`, Datenbank = lukida_essential
-2. SQL-Dateien nacheinander über „SQL-Befehl ausführen" einspielen
+2. SQL-Dateien nacheinander �ber �SQL-Befehl ausf�hren" einspielen
 
 ---
 
@@ -177,7 +177,7 @@ npm install
 npm run build
 ```
 
-Das erzeugt `ui/dist/` — das Verzeichnis das Apache für die UI ausliefert.
+Das erzeugt `ui/dist/` � das Verzeichnis das Apache f�r die UI ausliefert.
 
 ---
 
@@ -193,9 +193,9 @@ sudo systemctl restart apache2
 `mod_proxy` und `mod_proxy_http` sind zwingend erforderlich damit die UI
 API-Requests weiterleiten kann.
 
-### 7.2 VirtualHosts hinzufügen
+### 7.2 VirtualHosts hinzuf�gen
 
-In `/etc/apache2/sites-enabled/lukida.conf` anhängen (Ports anpassen falls belegt):
+In `/etc/apache2/sites-enabled/lukida.conf` anh�ngen (Ports anpassen falls belegt):
 
 ```apache
 Listen 9055
@@ -236,11 +236,11 @@ Listen 9056
 ```
 
 **Warum zwei VirtualHosts?**
-- Port **9055** — PHP-API. `SetEnv` setzt MODE/MODULE/CLIENT — funktioniert nur
-  über Apache, nicht mit `php -S`.
-- Port **9056** — Vue-UI (statische Dateien). `ProxyPass /api → 9055` leitet
+- Port **9055** � PHP-API. `SetEnv` setzt MODE/MODULE/CLIENT � funktioniert nur
+  �ber Apache, nicht mit `php -S`.
+- Port **9056** � Vue-UI (statische Dateien). `ProxyPass /api ? 9055` leitet
   API-Requests weiter. Im Dev-Modus (`npm run dev`) macht das Vite selbst;
-  im Build muss Apache es übernehmen.
+  im Build muss Apache es �bernehmen.
 
 ### 7.3 Apache neu laden
 
@@ -255,10 +255,10 @@ sudo systemctl reload apache2
 
 | URL | Was |
 |---|---|
-| `http://<server>:9055/api/user/search?q=test` | API direkt (GET → Fehlermeldung normal, POST erwartet) |
+| `http://<server>:9055/api/user/search?q=test` | API direkt (GET ? Fehlermeldung normal, POST erwartet) |
 | `http://<server>:9056` | Vue-UI |
 
-Im Browser Port 9056 öffnen → Suchbegriff eingeben → Treffer erscheinen.
+Im Browser Port 9056 �ffnen ? Suchbegriff eingeben ? Treffer erscheinen.
 
 ---
 
@@ -266,32 +266,32 @@ Im Browser Port 9056 öffnen → Suchbegriff eingeben → Treffer erscheinen.
 
 ```
 /home/<benutzer>/
-├── lukida-essential/            ← Git-Repo (Clone von GitHub)
-│   ├── 5/                       ← PHP-API (appl/ + base/)
-│   ├── ui/                      ← Vue 3 Frontend
-│   │   └── dist/                ← Build-Output (nach npm run build)
-│   ├── sql/                     ← schema.sql + demo-data.sql
-│   ├── index.php
-│   └── main.php
-│
-└── configs/                     ← Configs (AUSSERHALB des Repos, Name ist fest!)
-    ├── application.ini
-    ├── logs/                    ← Eigentümer: www-data
-    ├── caches/                  ← Eigentümer: www-data
-    └── production/
-        ├── database.ini
-        └── user.ini
++-- lukida-essential/            ? Git-Repo (Clone von GitHub)
+�   +-- 5/                       ? PHP-API (appl/ + base/)
+�   +-- ui/                      ? Vue 3 Frontend
+�   �   +-- dist/                ? Build-Output (nach npm run build)
+�   +-- sql/                     ? schema.sql + demo-data.sql
+�   +-- index.php
+�   +-- main.php
+�
++-- configs/                     ? Configs (AUSSERHALB des Repos, Name ist fest!)
+    +-- application.ini
+    +-- logs/                    ? Eigent�mer: www-data
+    +-- caches/                  ? Eigent�mer: www-data
+    +-- production/
+        +-- database.ini
+        +-- user.ini
 ```
 
 ---
 
-## 10. Häufige Fehler
+## 10. H�ufige Fehler
 
-| Symptom | Ursache | Lösung |
+| Symptom | Ursache | L�sung |
 |---|---|---|
-| `configs directory missing!` | Configs-Ordner heißt nicht `configs` | Ordner muss exakt `configs` heißen, eine Ebene über dem Repo |
+| `configs directory missing!` | Configs-Ordner hei�t nicht `configs` | Ordner muss exakt `configs` hei�en, eine Ebene �ber dem Repo |
 | `MODE` undefined / leere API-Antwort | `php -S` statt Apache | Apache VirtualHost mit `SetEnv` verwenden |
 | 500 bei `/api/...` aus der UI | `mod_proxy_http` nicht aktiv | `sudo a2enmod proxy proxy_http` |
 | `Failed to open stream: Keine Berechtigung` | logs/caches nicht www-data | `sudo chown -R www-data:www-data /home/<benutzer>/configs/logs` |
-| UI lädt, Suche liefert nichts | ProxyPass fehlt | `ProxyPass /api http://localhost:9055` im Port-9056-Block |
-| `5/` leer nach git clone | Submodule-Problem | `git rm --cached 5`, `.git` in `5/` entfernen, neu hinzufügen |
+| UI l�dt, Suche liefert nichts | ProxyPass fehlt | `ProxyPass /api http://localhost:9055` im Port-9056-Block |
+| `5/` leer nach git clone | Submodule-Problem | `git rm --cached 5`, `.git` in `5/` entfernen, neu hinzuf�gen |
