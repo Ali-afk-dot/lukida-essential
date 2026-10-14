@@ -17,7 +17,7 @@ Lukida Essential ist die kostenlose Open-Source-Version von Lukida Pro. Folgende
 
 ---
 
-> **Hinweis zu Pfaden:** Alle Pfade mit `/home/<benutzer>/` sind Beispiele und müssen durch den tatsächlichen Benutzerpfad ersetzt werden (z. B. `/home/ali/` oder `/var/www/`). Entscheidend ist nur die **relative Struktur**: `configs/` muss immer eine Ebene **über** dem Repo-Verzeichnis liegen.
+> **Hinweis zu Pfaden:** Alle Pfade mit `/home/<benutzer>/` sind Beispiele und müssen durch den tatsächlichen Benutzerpfad ersetzt werden (z. B. `/home/XXX/` oder `/var/www/`). Entscheidend ist nur die **relative Struktur**: `configs/` muss immer eine Ebene **über** dem Repo-Verzeichnis liegen.
 
 ---
 
