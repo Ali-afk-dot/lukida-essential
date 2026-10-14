@@ -3,6 +3,20 @@
 > Getestet auf esx-32.gbv.de (Debian/Ubuntu, Apache 2.4, PHP 8.4, PostgreSQL 16)  
 > Stand: Oktober 2026
 
+Lukida Essential ist die kostenlose Open-Source-Version von Lukida Pro. Folgende Features sind nur in der Pro-Version enthalten:
+
+- **Admin-Modul** ó Verwaltungsoberfl‰che f¸r Administratoren
+- **Hosting-Modul** ó Multi-Mandanten-Betrieb mit mehreren Datenbanken
+- **Push-Nachrichten** ó Benachrichtigungen nach dem Login
+- **Wallet, Bausteine, Fragen** ó Erweiterte Benutzer-Module
+- **PDF-Export** ó Drucken und Exportieren via MPDF
+- **Klassifikationssysteme** ó Suche in Normdaten und Klassifikationen
+- **Server-seitige Favoriten/Suchen/Einstellungen** ó In Essential werden diese nur lokal im Browser gespeichert
+- **Vereinfachte Authentifizierung** ó Essential verwendet API-Key-Auth statt JWT-Tokens
+- **Rate-Limiting / Brute-Force-Schutz** ó In Essential nicht enthalten
+
+---
+
 > **Hinweis zu Pfaden:** Alle Pfade mit `/home/<benutzer>/` sind Beispiele und m√ºssen durch den tats√§chlichen Benutzerpfad ersetzt werden (z. B. `/home/ali/` oder `/var/www/`). Entscheidend ist nur die **relative Struktur**: `configs/` muss immer eine Ebene **√ºber** dem Repo-Verzeichnis liegen.
 
 ---
