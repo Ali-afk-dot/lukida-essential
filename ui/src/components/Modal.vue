@@ -230,7 +230,7 @@ const LABELS = {
 }
 
 const mkBase = (area) => ({
-  apikey: '976c80f32840377b95c4ec991f77ec7b4836866812e02db85767e0615e1f5aef',
+  apikey: '<api-key-aus-application-ini>',
   client: 'Demo',
   appl:   'production',
   area:   area || 'findex',
