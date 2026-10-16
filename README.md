@@ -1,19 +1,19 @@
-# Lukida Essential ??" Installationsanleitung
+# Lukida Essential — Installationsanleitung
 
 > Getestet auf esx-32.gbv.de (Debian/Ubuntu, Apache 2.4, PHP 8.4, PostgreSQL 16)  
 > Stand: Oktober 2026
 
 Lukida Essential ist die kostenlose Open-Source-Version von Lukida Pro. Folgende Features sind nur in der Pro-Version enthalten:
 
-- **Admin-Modul** ??" Verwaltungsoberfläche für Administratoren
-- **Hosting-Modul** ??" Multi-Mandanten-Betrieb mit mehreren Datenbanken
-- **Push-Nachrichten** ??" Benachrichtigungen nach dem Login
-- **Wallet, Bausteine, Fragen** ??" Erweiterte Benutzer-Module
-- **PDF-Export** ??" Drucken und Exportieren via MPDF
-- **Klassifikationssysteme** ??" Suche in Normdaten und Klassifikationen
-- **Server-seitige Favoriten/Suchen/Einstellungen** ??" In Essential werden diese nur lokal im Browser gespeichert
-- **Vereinfachte Authentifizierung** ??" Essential verwendet API-Key-Auth statt JWT-Tokens
-- **Rate-Limiting / Brute-Force-Schutz** ??" In Essential nicht enthalten
+- **Admin-Modul** — Verwaltungsoberfläche für Administratoren
+- **Hosting-Modul** — Multi-Mandanten-Betrieb mit mehreren Datenbanken
+- **Push-Nachrichten** — Benachrichtigungen nach dem Login
+- **Wallet, Bausteine, Fragen** — Erweiterte Benutzer-Module
+- **PDF-Export** — Drucken und Exportieren via MPDF
+- **Klassifikationssysteme** — Suche in Normdaten und Klassifikationen
+- **Server-seitige Favoriten/Suchen/Einstellungen** — In Essential werden diese nur lokal im Browser gespeichert
+- **Vereinfachte Authentifizierung** — Essential verwendet API-Key-Auth statt JWT-Tokens
+- **Rate-Limiting / Brute-Force-Schutz** — In Essential nicht enthalten
 
 ---
 
@@ -42,7 +42,7 @@ cd /home/<benutzer>
 git clone https://github.com/Ali-afk-dot/lukida-essential lukida-essential
 ```
 
-**Wichtig ??" Verzeichnisstruktur:** `configs/`, `logs/` und `caches/` müssen immer eine Ebene **über** dem Repo liegen. Die Namen sind fest vorgegeben.
+**Wichtig — Verzeichnisstruktur:** `configs/`, `logs/` und `caches/` müssen immer eine Ebene **über** dem Repo liegen. Die Namen sind fest vorgegeben.
 
 ---
 
@@ -114,7 +114,7 @@ user=none
 
 Datei: `/home/<benutzer>/configs/production/user.ini`
 
-> Alle Werte in `<spitzen-klammern>` ersetzen. `appdebug` auf `false` lassen ??"
+> Alle Werte in `<spitzen-klammern>` ersetzen. `appdebug` auf `false` lassen —
 
 [db]
 driver=pgsql
@@ -141,7 +141,7 @@ sqd=false
 
 ## 4. Logs- und Caches-Verzeichnisse anlegen
 
-Die API schreibt Logs und Caches in die Ordner `logs/` und `caches/` ??" jeweils
+Die API schreibt Logs und Caches in die Ordner `logs/` und `caches/` — jeweils
 eine Ebene über dem Repo, also auf gleicher Ebene wie `configs/`. Apache läuft als
 `www-data` und braucht Schreibrechte:
 
@@ -193,8 +193,8 @@ PAIA-Zugangsdaten erhältst du von deinem lokalen Bibliothekssystem.
 ### 5.3 Schema und Demo-Daten einspielen
 
 Die SQL-Dateien liegen im Repo unter `sql/`:
-- `schema.sql` ??" erstellt alle Tabellen
-- `demo-data.sql` ??" füllt die DB mit Beispieldaten
+- `schema.sql` — erstellt alle Tabellen
+- `demo-data.sql` — füllt die DB mit Beispieldaten
 
 ```bash
 psql -h localhost -U lukida_essential -d lukida_essential \
@@ -213,13 +213,13 @@ npm install
 npm run build
 ```
 
-Das erzeugt `ui/dist/` ??" das Verzeichnis, das Apache für die UI ausliefert.
+Das erzeugt `ui/dist/` — das Verzeichnis, das Apache für die UI ausliefert.
 
 **Hinweis:** In `ui/src/` muss der API-Key an zwei Stellen eingetragen werden
 (gleicher Wert wie `apikey` in `application.ini`):
 
-- `ui/src/components/Navbar.vue` ??" Zeile mit `apikey:`
-- `ui/src/components/Modal.vue` ??" Zeile mit `apikey:`
+- `ui/src/components/Navbar.vue` — Zeile mit `apikey:`
+- `ui/src/components/Modal.vue` — Zeile mit `apikey:`
 
 Nach dem Eintragen erneut `npm run build` ausführen.
 
@@ -280,9 +280,9 @@ Listen 9056
 ```
 
 **Warum zwei VirtualHosts?**
-- Port **9055** ??" PHP-API. `SetEnv` setzt MODE/MODULE/CLIENT ??" funktioniert nur
+- Port **9055** — PHP-API. `SetEnv` setzt MODE/MODULE/CLIENT — funktioniert nur
   über Apache, nicht mit `php -S`.
-- Port **9056** ??" Vue-UI (statische Dateien). `ProxyPass /api ? 9055` leitet
+- Port **9056** — Vue-UI (statische Dateien). `ProxyPass /api ? 9055` leitet
   API-Requests weiter. Im Dev-Modus (`npm run dev`) macht das Vite selbst;
   im Build muss Apache es übernehmen.
 
