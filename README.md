@@ -1,6 +1,6 @@
 # Lukida Essential — Installationsanleitung
 
-> Getestet auf (Debian/Ubuntu, Apache 2.4, PHP 8.4, PostgreSQL 16)  
+> Getestet auf esx-32.gbv.de (Debian/Ubuntu, Apache 2.4, PHP 8.4, PostgreSQL 16)  
 > Stand: Oktober 2026
 
 Lukida Essential ist die kostenlose Open-Source-Version von Lukida Pro. Folgende Features sind nur in der Pro-Version enthalten:
@@ -17,7 +17,9 @@ Lukida Essential ist die kostenlose Open-Source-Version von Lukida Pro. Folgende
 
 ---
 
-> **Hinweis zu Pfaden:** Alle Pfade mit `/home/<benutzer>/` sind Beispiele und müssen durch den tatsächlichen Benutzerpfad ersetzt werden (z. B. `/home/XXX/` oder `/var/www/`). Entscheidend ist nur die **relative Struktur**: `configs/` muss immer eine Ebene **über** dem Repo-Verzeichnis liegen.
+> **Hinweis zu Platzhaltern:** Alle Werte in `<spitzen-klammern>` sind Platzhalter und müssen vor der Inbetriebnahme durch eigene Werte ersetzt werden.
+
+> **Hinweis zu Pfaden:** Der Installationspfad ist frei wählbar. `configs/`, `logs/` und `caches/` müssen immer eine Ebene **über** dem Repo-Verzeichnis liegen.
 
 ---
 
@@ -40,14 +42,14 @@ cd /home/<benutzer>
 git clone https://github.com/Ali-afk-dot/lukida-essential lukida-essential
 ```
 
-**Wichtig — Verzeichnisstruktur:** `main.php` sucht Konfigurationsdateien immer
-im Ordner `configs/` **eine Ebene über** dem Repo. Liegt das Repo in
-`/home/<benutzer>/lukida-essential/`, muss der Configs-Ordner in `/home/<benutzer>/configs/`
-liegen — der Name `configs` ist fest vorgegeben.
+**Wichtig — Verzeichnisstruktur:** `configs/`, `logs/` und `caches/` müssen immer eine Ebene **über** dem Repo liegen. Die Namen sind fest vorgegeben.
 
 ---
 
 ## 3. Config-Verzeichnis anlegen
+
+Der `configs/`-Ordner liegt bewusst außerhalb des Repos, damit Zugangsdaten nicht
+versehentlich in die Versionskontrolle gelangen.
 
 ```bash
 mkdir -p /home/<benutzer>/configs/production
@@ -56,6 +58,8 @@ mkdir -p /home/<benutzer>/configs/production
 ### 3.1 `application.ini`
 
 Datei: `/home/<benutzer>/configs/application.ini`
+
+> Alle Werte in `<spitzen-klammern>` ersetzen.
 
 ```ini
 [routes]
@@ -74,12 +78,14 @@ name         = <name>
 mail         = <email>
 company      = <organisation>
 homepage     = <homepage>
-pepper       = lukida-essential-2026
+pepper       = <zufälliger-pepper-string>
 ```
 
 ### 3.2 `production/database.ini`
 
 Datei: `/home/<benutzer>/configs/production/database.ini`
+
+> Alle Werte in `<spitzen-klammern>` ersetzen.
 
 ```ini
 [db]
@@ -96,6 +102,9 @@ user=none
 ### 3.3 `production/user.ini`
 
 Datei: `/home/<benutzer>/configs/production/user.ini`
+
+> Alle Werte in `<spitzen-klammern>` ersetzen. `appdebug` auf `false` lassen —
+> nur zum Debuggen auf `true` setzen, da sonst SQL-Queries im Log landen.
 
 ```ini
 [db]
@@ -115,22 +124,23 @@ from=<absender-email>
 fromname=Lukida Essential
 
 [appdebug]
-sqq=true
-sqd=true
+sqq=false
+sqd=false
 ```
 
 ---
 
 ## 4. Logs- und Caches-Verzeichnisse anlegen
 
-Die API schreibt Logs und Caches in den `configs/`-Ordner. Apache läuft als
+Die API schreibt Logs und Caches in die Ordner `logs/` und `caches/` — jeweils
+eine Ebene über dem Repo, also auf gleicher Ebene wie `configs/`. Apache läuft als
 `www-data` und braucht Schreibrechte:
 
 ```bash
-mkdir -p /home/<benutzer>/configs/logs
-mkdir -p /home/<benutzer>/configs/caches
-sudo chown -R www-data:www-data /home/<benutzer>/configs/logs
-sudo chown -R www-data:www-data /home/<benutzer>/configs/caches
+mkdir -p /home/<benutzer>/logs
+mkdir -p /home/<benutzer>/caches
+sudo chown -R www-data:www-data /home/<benutzer>/logs
+sudo chown -R www-data:www-data /home/<benutzer>/caches
 ```
 
 ---
@@ -151,9 +161,9 @@ CREATE DATABASE lukida_essential OWNER lukida_essential;
 
 ### 5.2 Schema und Demo-Daten einspielen
 
-Die SQL-Dateien liegen im Repo unter `lukida-essential/sql/`:
+Die SQL-Dateien liegen im Repo unter `sql/`:
 - `schema.sql` — erstellt alle Tabellen
-- `demo-data.sql` — füllt die DB mit Testdaten
+- `demo-data.sql` — füllt die DB mit Beispieldaten
 
 ```bash
 psql -h localhost -U lukida_essential -d lukida_essential \
@@ -167,10 +177,10 @@ Alternativ über **Adminer**:
    Passwort = `<passwort>`, Datenbank = lukida_essential
 2. SQL-Dateien nacheinander über „SQL-Befehl ausführen" einspielen
 
-### 5.3 Zugänge und Platzhalter
+### 5.3 Zugänge und Platzhalter in demo-data.sql
 
-Vor dem Einspielen von `demo-data.sql` müssen folgende Platzhalter in der Datei
-mit echten Werten ersetzt werden:
+Vor dem Einspielen von `demo-data.sql` müssen folgende Platzhalter mit echten
+Werten befüllt werden:
 
 | Platzhalter | Bedeutung | Woher |
 |---|---|---|
@@ -199,7 +209,15 @@ npm install
 npm run build
 ```
 
-Das erzeugt `ui/dist/` — das Verzeichnis das Apache für die UI ausliefert.
+Das erzeugt `ui/dist/` — das Verzeichnis, das Apache für die UI ausliefert.
+
+**Hinweis:** In `ui/src/` muss der API-Key an zwei Stellen eingetragen werden
+(gleicher Wert wie `apikey` in `application.ini`):
+
+- `ui/src/components/Navbar.vue` — Zeile mit `apikey:`
+- `ui/src/components/Modal.vue` — Zeile mit `apikey:`
+
+Nach dem Eintragen erneut `npm run build` ausführen.
 
 ---
 
@@ -297,12 +315,13 @@ Im Browser Port 9056 öffnen ? Suchbegriff eingeben ? Treffer erscheinen.
 ¦   +-- main.php
 ¦
 +-- configs/                     ? Configs (AUSSERHALB des Repos, Name ist fest!)
-    +-- application.ini
-    +-- logs/                    ? Eigentümer: www-data
-    +-- caches/                  ? Eigentümer: www-data
-    +-- production/
-        +-- database.ini
-        +-- user.ini
+¦   +-- application.ini
+¦   +-- production/
+¦       +-- database.ini
+¦       +-- user.ini
+¦
++-- logs/                        ? Eigentümer: www-data
++-- caches/                      ? Eigentümer: www-data
 ```
 
 ---
@@ -314,6 +333,6 @@ Im Browser Port 9056 öffnen ? Suchbegriff eingeben ? Treffer erscheinen.
 | `configs directory missing!` | Configs-Ordner heißt nicht `configs` | Ordner muss exakt `configs` heißen, eine Ebene über dem Repo |
 | `MODE` undefined / leere API-Antwort | `php -S` statt Apache | Apache VirtualHost mit `SetEnv` verwenden |
 | 500 bei `/api/...` aus der UI | `mod_proxy_http` nicht aktiv | `sudo a2enmod proxy proxy_http` |
-| `Failed to open stream: Keine Berechtigung` | logs/caches nicht www-data | `sudo chown -R www-data:www-data /home/<benutzer>/configs/logs` |
+| `Failed to open stream: Keine Berechtigung` | logs/caches nicht www-data | `sudo chown -R www-data:www-data /home/<benutzer>/logs /home/<benutzer>/caches` |
 | UI lädt, Suche liefert nichts | ProxyPass fehlt | `ProxyPass /api http://localhost:9055` im Port-9056-Block |
 | `5/` leer nach git clone | Submodule-Problem | `git rm --cached 5`, `.git` in `5/` entfernen, neu hinzufügen |
