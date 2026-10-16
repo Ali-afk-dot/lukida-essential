@@ -1,25 +1,25 @@
-# Lukida Essential — Installationsanleitung
+# Lukida Essential ??" Installationsanleitung
 
 > Getestet auf esx-32.gbv.de (Debian/Ubuntu, Apache 2.4, PHP 8.4, PostgreSQL 16)  
 > Stand: Oktober 2026
 
 Lukida Essential ist die kostenlose Open-Source-Version von Lukida Pro. Folgende Features sind nur in der Pro-Version enthalten:
 
-- **Admin-Modul** — Verwaltungsoberfläche für Administratoren
-- **Hosting-Modul** — Multi-Mandanten-Betrieb mit mehreren Datenbanken
-- **Push-Nachrichten** — Benachrichtigungen nach dem Login
-- **Wallet, Bausteine, Fragen** — Erweiterte Benutzer-Module
-- **PDF-Export** — Drucken und Exportieren via MPDF
-- **Klassifikationssysteme** — Suche in Normdaten und Klassifikationen
-- **Server-seitige Favoriten/Suchen/Einstellungen** — In Essential werden diese nur lokal im Browser gespeichert
-- **Vereinfachte Authentifizierung** — Essential verwendet API-Key-Auth statt JWT-Tokens
-- **Rate-Limiting / Brute-Force-Schutz** — In Essential nicht enthalten
+- **Admin-Modul** ??" VerwaltungsoberflÃ¤che fÃ¼r Administratoren
+- **Hosting-Modul** ??" Multi-Mandanten-Betrieb mit mehreren Datenbanken
+- **Push-Nachrichten** ??" Benachrichtigungen nach dem Login
+- **Wallet, Bausteine, Fragen** ??" Erweiterte Benutzer-Module
+- **PDF-Export** ??" Drucken und Exportieren via MPDF
+- **Klassifikationssysteme** ??" Suche in Normdaten und Klassifikationen
+- **Server-seitige Favoriten/Suchen/Einstellungen** ??" In Essential werden diese nur lokal im Browser gespeichert
+- **Vereinfachte Authentifizierung** ??" Essential verwendet API-Key-Auth statt JWT-Tokens
+- **Rate-Limiting / Brute-Force-Schutz** ??" In Essential nicht enthalten
 
 ---
 
-> **Hinweis zu Platzhaltern:** Alle Werte in `<spitzen-klammern>` sind Platzhalter und müssen vor der Inbetriebnahme durch eigene Werte ersetzt werden.
+> **Hinweis zu Platzhaltern:** Alle Werte in `<spitzen-klammern>` sind Platzhalter und mÃ¼ssen vor der Inbetriebnahme durch eigene Werte ersetzt werden.
 
-> **Hinweis zu Pfaden:** Der Installationspfad ist frei wählbar. `configs/`, `logs/` und `caches/` müssen immer eine Ebene **über** dem Repo-Verzeichnis liegen.
+> **Hinweis zu Pfaden:** Der Installationspfad ist frei wÃ¤hlbar. `configs/`, `logs/` und `caches/` mÃ¼ssen immer eine Ebene **Ã¼ber** dem Repo-Verzeichnis liegen.
 
 ---
 
@@ -30,7 +30,7 @@ Lukida Essential ist die kostenlose Open-Source-Version von Lukida Pro. Folgende
 | PHP | 8.4 |
 | PostgreSQL | 16 |
 | Apache | 2.4 (mit mod_rewrite, mod_proxy, mod_proxy_http) |
-| Node.js | 20+ (nur für UI-Build) |
+| Node.js | 20+ (nur fÃ¼r UI-Build) |
 | Git | beliebig |
 
 ---
@@ -42,13 +42,13 @@ cd /home/<benutzer>
 git clone https://github.com/Ali-afk-dot/lukida-essential lukida-essential
 ```
 
-**Wichtig — Verzeichnisstruktur:** `configs/`, `logs/` und `caches/` müssen immer eine Ebene **über** dem Repo liegen. Die Namen sind fest vorgegeben.
+**Wichtig ??" Verzeichnisstruktur:** `configs/`, `logs/` und `caches/` mÃ¼ssen immer eine Ebene **Ã¼ber** dem Repo liegen. Die Namen sind fest vorgegeben.
 
 ---
 
 ## 3. Config-Verzeichnis anlegen
 
-Der `configs/`-Ordner liegt bewusst außerhalb des Repos, damit Zugangsdaten nicht
+Der `configs/`-Ordner liegt bewusst auÃŸerhalb des Repos, damit Zugangsdaten nicht
 versehentlich in die Versionskontrolle gelangen.
 
 ```bash
@@ -78,7 +78,7 @@ name         = <name>
 mail         = <email>
 company      = <organisation>
 homepage     = <homepage>
-pepper       = <zufälliger-pepper-string>
+pepper       = <zufÃ¤lliger-pepper-string>
 ```
 
 ### 3.2 `production/database.ini`
@@ -103,7 +103,7 @@ user=none
 
 Datei: `/home/<benutzer>/configs/production/user.ini`
 
-> Alle Werte in `<spitzen-klammern>` ersetzen. `appdebug` auf `false` lassen —
+> Alle Werte in `<spitzen-klammern>` ersetzen. `appdebug` auf `false` lassen ??"
 > nur zum Debuggen auf `true` setzen, da sonst SQL-Queries im Log landen.
 
 ```ini
@@ -132,8 +132,8 @@ sqd=false
 
 ## 4. Logs- und Caches-Verzeichnisse anlegen
 
-Die API schreibt Logs und Caches in die Ordner `logs/` und `caches/` — jeweils
-eine Ebene über dem Repo, also auf gleicher Ebene wie `configs/`. Apache läuft als
+Die API schreibt Logs und Caches in die Ordner `logs/` und `caches/` ??" jeweils
+eine Ebene Ã¼ber dem Repo, also auf gleicher Ebene wie `configs/`. Apache lÃ¤uft als
 `www-data` und braucht Schreibrechte:
 
 ```bash
@@ -159,28 +159,10 @@ CREATE DATABASE lukida_essential OWNER lukida_essential;
 \q
 ```
 
-### 5.2 Schema und Demo-Daten einspielen
+### 5.2 Platzhalter in demo-data.sql befÃ¼llen
 
-Die SQL-Dateien liegen im Repo unter `sql/`:
-- `schema.sql` — erstellt alle Tabellen
-- `demo-data.sql` — füllt die DB mit Beispieldaten
-
-```bash
-psql -h localhost -U lukida_essential -d lukida_essential \
-  -f /home/<benutzer>/lukida-essential/sql/schema.sql
-psql -h localhost -U lukida_essential -d lukida_essential \
-  -f /home/<benutzer>/lukida-essential/sql/demo-data.sql
-```
-
-Alternativ über **Adminer**:
-1. Einloggen: System = PostgreSQL, Server = localhost, User = lukida_essential,
-   Passwort = `<passwort>`, Datenbank = lukida_essential
-2. SQL-Dateien nacheinander über „SQL-Befehl ausführen" einspielen
-
-### 5.3 Zugänge und Platzhalter in demo-data.sql
-
-Vor dem Einspielen von `demo-data.sql` müssen folgende Platzhalter mit echten
-Werten befüllt werden:
+Vor dem Einspielen von `demo-data.sql` mÃ¼ssen folgende Platzhalter mit echten
+Werten befÃ¼llt werden:
 
 | Platzhalter | Bedeutung | Woher |
 |---|---|---|
@@ -197,7 +179,20 @@ Werten befüllt werden:
 | `<testpass>` | Testnutzer-Passwort | Eigene Bibliothek |
 
 Den Solr-Zugang (Host + Pfad) stellt GBV auf Anfrage bereit.
-PAIA-Zugangsdaten erhältst du von deinem lokalen Bibliothekssystem.
+PAIA-Zugangsdaten erhÃ¤ltst du von deinem lokalen Bibliothekssystem.
+
+### 5.3 Schema und Demo-Daten einspielen
+
+Die SQL-Dateien liegen im Repo unter `sql/`:
+- `schema.sql` ??" erstellt alle Tabellen
+- `demo-data.sql` ??" fÃ¼llt die DB mit Beispieldaten
+
+```bash
+psql -h localhost -U lukida_essential -d lukida_essential \
+  -f /home/<benutzer>/lukida-essential/sql/schema.sql
+psql -h localhost -U lukida_essential -d lukida_essential \
+  -f /home/<benutzer>/lukida-essential/sql/demo-data.sql
+```
 
 ---
 
@@ -209,15 +204,15 @@ npm install
 npm run build
 ```
 
-Das erzeugt `ui/dist/` — das Verzeichnis, das Apache für die UI ausliefert.
+Das erzeugt `ui/dist/` ??" das Verzeichnis, das Apache fÃ¼r die UI ausliefert.
 
 **Hinweis:** In `ui/src/` muss der API-Key an zwei Stellen eingetragen werden
 (gleicher Wert wie `apikey` in `application.ini`):
 
-- `ui/src/components/Navbar.vue` — Zeile mit `apikey:`
-- `ui/src/components/Modal.vue` — Zeile mit `apikey:`
+- `ui/src/components/Navbar.vue` ??" Zeile mit `apikey:`
+- `ui/src/components/Modal.vue` ??" Zeile mit `apikey:`
 
-Nach dem Eintragen erneut `npm run build` ausführen.
+Nach dem Eintragen erneut `npm run build` ausfÃ¼hren.
 
 ---
 
@@ -233,9 +228,9 @@ sudo systemctl restart apache2
 `mod_proxy` und `mod_proxy_http` sind zwingend erforderlich damit die UI
 API-Requests weiterleiten kann.
 
-### 7.2 VirtualHosts hinzufügen
+### 7.2 VirtualHosts hinzufÃ¼gen
 
-In `/etc/apache2/sites-enabled/lukida.conf` anhängen (Ports anpassen falls belegt):
+In `/etc/apache2/sites-enabled/lukida.conf` anhÃ¤ngen (Ports anpassen falls belegt):
 
 ```apache
 Listen 9055
@@ -276,11 +271,11 @@ Listen 9056
 ```
 
 **Warum zwei VirtualHosts?**
-- Port **9055** — PHP-API. `SetEnv` setzt MODE/MODULE/CLIENT — funktioniert nur
-  über Apache, nicht mit `php -S`.
-- Port **9056** — Vue-UI (statische Dateien). `ProxyPass /api ? 9055` leitet
+- Port **9055** ??" PHP-API. `SetEnv` setzt MODE/MODULE/CLIENT ??" funktioniert nur
+  Ã¼ber Apache, nicht mit `php -S`.
+- Port **9056** ??" Vue-UI (statische Dateien). `ProxyPass /api ? 9055` leitet
   API-Requests weiter. Im Dev-Modus (`npm run dev`) macht das Vite selbst;
-  im Build muss Apache es übernehmen.
+  im Build muss Apache es Ã¼bernehmen.
 
 ### 7.3 Apache neu laden
 
@@ -298,7 +293,7 @@ sudo systemctl reload apache2
 | `http://<server>:9055/api/user/search?q=test` | API direkt (GET ? Fehlermeldung normal, POST erwartet) |
 | `http://<server>:9056` | Vue-UI |
 
-Im Browser Port 9056 öffnen ? Suchbegriff eingeben ? Treffer erscheinen.
+Im Browser Port 9056 Ã¶ffnen ? Suchbegriff eingeben ? Treffer erscheinen.
 
 ---
 
@@ -307,32 +302,32 @@ Im Browser Port 9056 öffnen ? Suchbegriff eingeben ? Treffer erscheinen.
 ```
 /home/<benutzer>/
 +-- lukida-essential/            ? Git-Repo (Clone von GitHub)
-¦   +-- 5/                       ? PHP-API (appl/ + base/)
-¦   +-- ui/                      ? Vue 3 Frontend
-¦   ¦   +-- dist/                ? Build-Output (nach npm run build)
-¦   +-- sql/                     ? schema.sql + demo-data.sql
-¦   +-- index.php
-¦   +-- main.php
-¦
+|   +-- 5/                       ? PHP-API (appl/ + base/)
+|   +-- ui/                      ? Vue 3 Frontend
+|   |   +-- dist/                ? Build-Output (nach npm run build)
+|   +-- sql/                     ? schema.sql + demo-data.sql
+|   +-- index.php
+|   +-- main.php
+|
 +-- configs/                     ? Configs (AUSSERHALB des Repos, Name ist fest!)
-¦   +-- application.ini
-¦   +-- production/
-¦       +-- database.ini
-¦       +-- user.ini
-¦
-+-- logs/                        ? Eigentümer: www-data
-+-- caches/                      ? Eigentümer: www-data
+|   +-- application.ini
+|   +-- production/
+|       +-- database.ini
+|       +-- user.ini
+|
++-- logs/                        ? EigentÃ¼mer: www-data
++-- caches/                      ? EigentÃ¼mer: www-data
 ```
 
 ---
 
-## 10. Häufige Fehler
+## 10. HÃ¤ufige Fehler
 
-| Symptom | Ursache | Lösung |
+| Symptom | Ursache | LÃ¶sung |
 |---|---|---|
-| `configs directory missing!` | Configs-Ordner heißt nicht `configs` | Ordner muss exakt `configs` heißen, eine Ebene über dem Repo |
+| `configs directory missing!` | Configs-Ordner heiÃŸt nicht `configs` | Ordner muss exakt `configs` heiÃŸen, eine Ebene Ã¼ber dem Repo |
 | `MODE` undefined / leere API-Antwort | `php -S` statt Apache | Apache VirtualHost mit `SetEnv` verwenden |
 | 500 bei `/api/...` aus der UI | `mod_proxy_http` nicht aktiv | `sudo a2enmod proxy proxy_http` |
 | `Failed to open stream: Keine Berechtigung` | logs/caches nicht www-data | `sudo chown -R www-data:www-data /home/<benutzer>/logs /home/<benutzer>/caches` |
-| UI lädt, Suche liefert nichts | ProxyPass fehlt | `ProxyPass /api http://localhost:9055` im Port-9056-Block |
-| `5/` leer nach git clone | Submodule-Problem | `git rm --cached 5`, `.git` in `5/` entfernen, neu hinzufügen |
+| UI lÃ¤dt, Suche liefert nichts | ProxyPass fehlt | `ProxyPass /api http://localhost:9055` im Port-9056-Block |
+| `5/` leer nach git clone | Submodule-Problem | `git rm --cached 5`, `.git` in `5/` entfernen, neu hinzufÃ¼gen |
