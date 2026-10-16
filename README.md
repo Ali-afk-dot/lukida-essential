@@ -61,6 +61,19 @@ Datei: `/home/<benutzer>/configs/application.ini`
 
 > Alle Werte in `<spitzen-klammern>` ersetzen.
 
+**API-Key generieren** — einmalig ausführen, Ausgabe merken:
+
+```bash
+openssl rand -hex 32
+```
+
+Den generierten Key an **drei Stellen** eintragen:
+1. `configs/application.ini` → `apikey = <ausgabe>`
+2. `ui/src/components/Navbar.vue` → Zeile mit `apikey:`
+3. `ui/src/components/Modal.vue` → Zeile mit `apikey:`
+
+Nach dem Eintragen in den Vue-Dateien: `npm run build` ausführen (siehe Abschnitt 6).
+
 ```ini
 [routes]
 POST /@api/@module/@action=@module->@action
@@ -87,8 +100,6 @@ Datei: `/home/<benutzer>/configs/production/database.ini`
 
 > Alle Werte in `<spitzen-klammern>` ersetzen.
 
-```ini
-[db]
 driver=pgsql
 database=lukida_essential
 
@@ -104,9 +115,7 @@ user=none
 Datei: `/home/<benutzer>/configs/production/user.ini`
 
 > Alle Werte in `<spitzen-klammern>` ersetzen. `appdebug` auf `false` lassen ??"
-> nur zum Debuggen auf `true` setzen, da sonst SQL-Queries im Log landen.
 
-```ini
 [db]
 driver=pgsql
 host=localhost
