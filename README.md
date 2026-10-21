@@ -71,6 +71,7 @@ Den generierten Key an **drei Stellen** eintragen:
 1. `configs/application.ini` → `apikey = <ausgabe>`
 2. `ui/src/components/Navbar.vue` → Zeile mit `apikey:`
 3. `ui/src/components/Modal.vue` → Zeile mit `apikey:`
+4. `ui/src/App.vue` → Zeile mit `apikey:`
 
 Nach dem Eintragen in den Vue-Dateien: `npm run build` ausführen (siehe Abschnitt 6).
 
@@ -91,7 +92,7 @@ name         = <name>
 mail         = <email>
 company      = <organisation>
 homepage     = <homepage>
-pepper       = <zufälliger-pepper-string>
+pepper       = lukida-essential-2026
 ```
 
 ### 3.2 `production/database.ini`
@@ -220,6 +221,7 @@ Das erzeugt `ui/dist/` — das Verzeichnis, das Apache für die UI ausliefert.
 
 - `ui/src/components/Navbar.vue` — Zeile mit `apikey:`
 - `ui/src/components/Modal.vue` — Zeile mit `apikey:`
+- `ui/src/App.vue` — Zeile mit `apikey:`
 
 Nach dem Eintragen erneut `npm run build` ausführen.
 
