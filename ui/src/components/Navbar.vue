@@ -106,7 +106,7 @@ async function doLogin() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        apikey: '<api-key-aus-application-ini>',
+        apikey: '<api-key>',
         appl:    'production',
         client:  'Demo',
         area:    'findex',

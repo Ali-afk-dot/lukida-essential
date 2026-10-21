@@ -128,8 +128,8 @@ async function doSearch() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        apikey:  '976c80f32840377b95c4ec991f77ec7b4836866812e02db85767e0615e1f5aef',
-        client:  'Essential', appl: 'production', area: 'findex',
+        apikey:  '<api-key>',
+        client:  'Demo', appl: 'production', area: 'findex',
         search:  { query: query.value },
         display: { bib: true },
         start:   start.value, limit: pageSize
